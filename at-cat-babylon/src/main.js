@@ -66,10 +66,11 @@ import './lib/FurMaterial'
 // import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
-const SHADOW_GENERATOR_SIZE = 512
-const DEBUG = true
+const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
+const DEBUG = true // 控制是否游戏中渲染Debug层
 
 class Game {
+  // #region 属性
   /** Canvas DOM 元素
    * @type {HTMLCanvasElement}
    */
@@ -115,37 +116,45 @@ class Game {
    */
   get assetsManager () { return this._assetsManager }
   set assetsManager (val) { this._assetsManager = val }
+  // #endregion
 
-  constructor (canvas) {
-    this.canvas = canvas || document.getElementById('renderCanvas')
-    this.init()
+  /** 构造函数
+   * @param {HTMLCanvasElement} canvas - Canvas DOM 元素，默认为：document.getElementById('renderCanvas')
+   * @param {Boolean} init - 是否执行初始化，默认：true
+   * @memberof Game
+   */
+  constructor (canvas = document.getElementById('renderCanvas'), init = true) {
+    this.canvas = canvas
   }
 
-  /** initialize this class */
+  /** 初始化
+   * @returns {Game} 自身
+   */
   init () {
+    // 初始化引擎
     this.engine = new BABYLON.Engine(this.canvas, true, null, false)
 
-    // initialize scene.
+    // 初始化场景
     this.scene = new BABYLON.Scene(this.engine)
     this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
 
-    // initialize main render camera.
-    this.camera = new BABYLON.FreeCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.scene)
+    // 初始化渲染摄像机
+    this.camera = new BABYLON.FreeCamera('MAIN_CAMERA', new BABYLON.Vector3(0, 0, 10), this.scene)
     this.camera.setTarget(BABYLON.Vector3.Zero())
     this.camera.attachControl(this.canvas, true)
 
-    // initialize default light and shadow generator.
-    this.light = new BABYLON.PointLight('Default-Light', new BABYLON.Vector3(0, 1, 0), this.scene)
+    // 初始化主灯光以及阴影发生器
+    this.light = new BABYLON.PointLight('MAIN_LIGHT', new BABYLON.Vector3(0, 1, 0), this.scene)
     this.light.intensity = 0.7
     this.shadowGenerator = new BABYLON.ShadowGenerator(SHADOW_GENERATOR_SIZE, this.light)
     this.shadowGenerator.useBlurExponentialShadowMap = true
     this.shadowGenerator.useCloseExponentialShadowMap = true
 
-    // initialize pipeline
-    this.pipeline = new BABYLON.DefaultRenderingPipeline('Default-Pipeline', true, this.scene, [this.camera], true)
+    // 初始化渲染管线
+    this.pipeline = new BABYLON.DefaultRenderingPipeline('DEFAULT_PIPELINE', true, this.scene, [this.camera], true)
 
-    this.pipeline.samples = 4 // Multisample Anti-Aliasing, range 1-4, default 1
-    this.pipeline.fxaaEnabled = true // Fast Approximate Anti-Aliasing, default false
+    this.pipeline.samples = 4 // 多采样抗锯齿 1~4 默认：1
+    this.pipeline.fxaaEnabled = true // 快速抗锯齿，默认：false
     this.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
     this.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
     this.pipeline.imageProcessing.exposure = 1.25 // Camera exposure, range 1-4, default 1
@@ -155,18 +164,21 @@ class Game {
     this.pipeline.bloomThreshold = 0.15 // Threshold
     this.pipeline.bloomScale = 0.45 // Scale
 
+    // 资源管理器
     this.assetsManager = new BABYLON.AssetsManager(this.scene)
 
-    window.addEventListener('resize', () => {
-      this._engine.resize()
-    })
+    // 尺寸变更事件
+    window.addEventListener('resize', () => this._engine.resize())
 
     return this
   }
 
+  /** 开始游戏
+   * @memberof Game
+   */
   start () {
     this.engine.runRenderLoop(() => this.scene.render())
-    DEBUG && this.scene.debugLayer.show()
+    DEBUG && this.scene.debugLayer.show() // 是否渲染Debug层
 
     new Scenehouse(this).run()
   }
