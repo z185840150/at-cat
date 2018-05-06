@@ -59,15 +59,16 @@
  */
 
 import * as BABYLON from 'babylonjs'
+
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
-import './lib/FurMaterial'
+import './lib/fur-material'
 
 // import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
-const DEBUG = true // 控制是否游戏中渲染Debug层
+const DEBUG = false // 控制是否游戏中渲染Debug层
 
 export default class Game {
   // #region 属性
