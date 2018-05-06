@@ -69,7 +69,7 @@ import Scenehouse from './scenes/SceneHouse'
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
 const DEBUG = true // 控制是否游戏中渲染Debug层
 
-class Game {
+export default class Game {
   // #region 属性
   /** Canvas DOM 元素
    * @type {HTMLCanvasElement}
@@ -184,6 +184,5 @@ class Game {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => new Game().start())
-
-export default Game
+window.game = new Game()
+window.addEventListener('DOMContentLoaded', () => { window.game.start() })
