@@ -30,9 +30,9 @@ class TargetMaker {
         let targetVertex = new BABYLON.Vector3(target.p[i * 3], target.p[i * 3 + 1], target.p[i * 3 + 2])
 
         if (BABYLON.Vector3.Distance(sourceVertex, targetVertex) > 0) {
-          let x = (targetVertex.x - sourceVertex.x).toFixed(4)
-          let y = (targetVertex.y - sourceVertex.y).toFixed(4)
-          let z = (targetVertex.z - sourceVertex.z).toFixed(4)
+          // let x = (targetVertex.x - sourceVertex.x).toFixed(4)
+          // let y = (targetVertex.y - sourceVertex.y).toFixed(4)
+          // let z = (targetVertex.z - sourceVertex.z).toFixed(4)
           // result += (x > 0 || y > 0 || z > 0) ? `${i} ${x > 0 ? x : 0} ${y > 0 ? y : 0} ${z > 0 ? z : 0}\n` : ''
           result += `${i} ${targetVertex.x} ${targetVertex.y} ${targetVertex.z}\n`
         }
