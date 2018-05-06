@@ -58,7 +58,7 @@
  * ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
  */
 
-import BABYLON from 'babylonjs'
+import * as BABYLON from 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import './lib/FurMaterial'
