@@ -75,46 +75,63 @@ export default class Game {
    * @type {HTMLCanvasElement}
    */
   get canvas () { return this._canvas }
-  set canvas (val) { this._canvas = val }
   /** Babylon 引擎
    * @type {BABYLON.Engine}
    */
   get engine () { return this._engine }
-  set engine (val) { this._engine = val }
   /** 主场景
    * @type {BABYLON.Scene}
    */
   get scene () { return this._scene }
-  set scene (val) { this._scene = val }
   /** 主摄像机
    * @type {BABYLON.Camera}
    */
   get camera () { return this._camera }
-  set camera (val) { this._camera = val }
   /** 天空盒
    * @type {BABYLON.Mesh}
    */
   get skybox () { return this._skybox }
-  set skybox (val) { this._skybox = val }
   /** 主光源
    * @type {BABYLON.Light}
    */
   get light () { return this._light }
-  set light (val) { this._light = val }
   /** 主阴影
    * @type {BABYLON.ShadowGenerator}
    */
   get shadowGenerator () { return this._shadowGenerator }
-  set shadowGenerator (val) { this._shadowGenerator = val }
   /** 默认渲染管线
    * @type {BABYLON.PostProcessRenderPipeline}
    */
   get pipeline () { return this._pipeline }
-  set pipeline (val) { this._pipeline = val }
   /** 资源管理器
    * @type {BABYLON.AssetsManager}
    */
   get assetsManager () { return this._assetsManager }
+  /** 获取自身是否初始化
+   * @readonly
+   * @memberof Game
+   */
+  get initialized () {
+    return true &&
+    this._canvas &&
+    this._engine &&
+    this._scene &&
+    this._camera &&
+    this._skybox &&
+    this._light &&
+    this._shadowGenerator &&
+    this._pipeline &&
+    this._assetsManager
+  }
+
+  set canvas (val) { this._canvas = val }
+  set engine (val) { this._engine = val }
+  set scene (val) { this._scene = val }
+  set camera (val) { this._camera = val }
+  set skybox (val) { this._skybox = val }
+  set light (val) { this._light = val }
+  set shadowGenerator (val) { this._shadowGenerator = val }
+  set pipeline (val) { this._pipeline = val }
   set assetsManager (val) { this._assetsManager = val }
   // #endregion
 
@@ -132,6 +149,7 @@ export default class Game {
    */
   init () {
     // 初始化引擎
+    this.engine && this.engine.dispose()
     this.engine = new BABYLON.Engine(this.canvas, true, null, false)
 
     // 初始化场景
@@ -177,12 +195,13 @@ export default class Game {
    * @memberof Game
    */
   start () {
-    this.engine.runRenderLoop(() => this.scene.render())
+    if (!this.initialized) this.init() // 判断是否初始化
+    this.engine.runRenderLoop(() => this.scene.render()) // 引擎开始循环渲染
     DEBUG && this.scene.debugLayer.show() // 是否渲染Debug层
 
-    new Scenehouse(this).run()
+    new Scenehouse(this).run() // 场景开始
   }
 }
 
-window.game = new Game()
+window.game = new Game() // 全局注册游戏
 window.addEventListener('DOMContentLoaded', () => { window.game.start() })
