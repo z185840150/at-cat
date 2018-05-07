@@ -68,8 +68,8 @@ class SceneHouse extends Scene {
         BABYLON.SceneLoader.ImportMeshAsync(MESH_NAMES,
           './static/assets/resources/cat/babylon/',
           'cat-target.babylon', scene).then(({meshes, skeletons}) => {
-          new TargetMaker(scene.getMeshByName('cat_body'), scene.getMeshByName(name)).build()
-        })
+            new TargetMaker(scene.getMeshByName('cat_body'), scene.getMeshByName(name)).build()
+          })
       })
   }
 

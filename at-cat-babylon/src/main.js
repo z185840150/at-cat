@@ -63,8 +63,9 @@ import * as BABYLON from 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import './lib/fur-material'
+import './lib/star-material'
 
-// import SceneLoading from './scenes/SceneLoading'
+import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
@@ -200,7 +201,8 @@ export default class Game {
     this.engine.runRenderLoop(() => this.scene.render()) // 引擎开始循环渲染
     DEBUG && this.scene.debugLayer.show() // 是否渲染Debug层
 
-    new Scenehouse(this).run() // 场景开始
+    new SceneLoading(this).run()
+    // new Scenehouse(this).run() // 场景开始
   }
 }
 

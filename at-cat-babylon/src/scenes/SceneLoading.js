@@ -1,121 +1,155 @@
 import * as GUI from 'babylonjs-gui'
+import Game from './../main' // eslint-disable-line no-unused-vars
+
+const FPS = 60
+
+const PARTICLE_START_TIME = 500 // eslint-disable-line no-unused-vars
+/** GUI 初始化延时，如果为 0 可能造成定位不准确。 */
+const GUI_LABEL_READY_TIME = 50
+/** 飞溅网格资源文件路径 */
+const MESH_SPLASH_FILE_PATH = './static/assets/resources/'
+/** 飞溅网格资源文件名称 */
+const MESH_SPLASH_FILE_NAME = 'LoadingUI.babylon'
+/** 飞溅网格资源文件网格名称 */
+const MESH_SPLASH_ASSETS_NAME = 'plane'
+/** GUI 入场透明度过渡时长 */
+const GUI_BEGIN_FADE_IN_DURATION = 500
+/** GUI 入场透明度过渡区间值 */
+const GUI_BEGIN_FADE_IN_OPACITY_STEP = 1 / (GUI_BEGIN_FADE_IN_DURATION / 1000) * FPS / 1000
+/** GUI 入场后静止时间 */
+const GUI_BEGIN_WATTING_TIME = 1000
 
 class SceneLoading {
+  get game () { return this._game }
+  get guis () { return this._guis }
+  /** 飞溅动画网格
+   * @type {BABYLON.Mesh}
+   */
+  get splash () { return this._splash }
+  /** 飞溅网格动画加载完毕
+   * @type {boolean}
+   */
+  get splashIsReady () { return this._splashIsReady }
+
+  set game (val) { this._game = val }
+  set guis (val) { this._guis = val }
+  set splash (val) { this._splash = val }
+  set splashIsReady (val) { this._splashIsReady = val }
+  /**
+   * Creates an instance of SceneLoading.
+   * @param {Game} game - 游戏
+   * @memberof SceneLoading
+   */
   constructor (game) {
     this._game = game
+    this._splashIsReady = false
 
-    this.FPS = 60
-    this.GUI_LABEL_READY_TIME = 50
     this.GUI_BEGIN_ALPHA_CHANGE_TIME = 500
-    this.GUI_SHOW_WAITING_TIME = 1000
     this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME = 1000
     this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME = 200
-    this.PARTICLE_START_TIME = 500
 
     this.init()
   }
 
   init () {
-    this._gui = {}
-    this._gui._advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('Begin-Scene-GUI', true, this._game._scene)
+    this.guis = {}
 
-    this._gui._advancedTexture.renderAtIdealSize = false
+    this.guis.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('Begin-Scene-GUI', true, this.game.scene)
+    this.guis.advancedTexture.renderAtIdealSize = false
 
-    return this.initLabel()
+    // #region 初始化标签
+    this.guis.textCompany = new BABYLON.GUI.TextBlock()
+    this.guis.textCompany.fontFamily = 'Microsoft YaHei'
+    this.guis.textCompany.fontSize = '32px'
+    this.guis.textCompany.color = 'white'
+    this.guis.textCompany.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textCompany.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textCompany.resizeToFit = true
+    this.guis.textCompany.text = 'Parity Ltd. Present'
+    this.guis.textCompany.alpha = 0
+
+    this.guis.textBestOf = new BABYLON.GUI.TextBlock()
+    this.guis.textBestOf.fontFamily = 'Microsoft YaHei'
+    this.guis.textBestOf.resizeToFit = true
+    this.guis.textBestOf.text = 'BEST OF 2018-2020'
+    this.guis.textBestOf.fontSize = '14px'
+    this.guis.textBestOf.color = 'white'
+    this.guis.textBestOf.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textBestOf.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textBestOf.alpha = 0
+
+    this.guis.textPowerBy = new BABYLON.GUI.TextBlock()
+    this.guis.textPowerBy.fontFamily = 'Microsoft YaHei'
+    this.guis.textPowerBy.resizeToFit = true
+    this.guis.textPowerBy.text = '3D POWER BY BABYLON JS'
+    this.guis.textPowerBy.fontSize = '16px'
+    this.guis.textPowerBy.color = 'white'
+    this.guis.textPowerBy.scaleY = 0.5
+    this.guis.textPowerBy.scaleX = 0.5
+    this.guis.textPowerBy.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textPowerBy.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textPowerBy.alpha = 0
+
+    this.guis.advancedTexture.addControl(this.guis.textCompany)
+    this.guis.advancedTexture.addControl(this.guis.textBestOf)
+    this.guis.advancedTexture.addControl(this.guis.textPowerBy)
+    // #endregion
   }
 
-  initLabel () {
-    this._gui._textCompany = new BABYLON.GUI.TextBlock()
-    this._gui._textCompany.fontFamily = 'Microsoft YaHei'
-    this._gui._textCompany.fontSize = '32px'
-    this._gui._textCompany.color = 'white'
-    this._gui._textCompany.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this._gui._textCompany.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this._gui._textCompany.resizeToFit = true
-    this._gui._textCompany.text = 'Parity Ltd. Present'
-    this._gui._textCompany.alpha = 0
-
-    this._gui._textBestOf = new BABYLON.GUI.TextBlock()
-    this._gui._textBestOf.fontFamily = 'Microsoft YaHei'
-    this._gui._textBestOf.resizeToFit = true
-    this._gui._textBestOf.text = 'BEST OF 2018-2020'
-    this._gui._textBestOf.fontSize = '14px'
-    this._gui._textBestOf.color = 'white'
-    this._gui._textBestOf.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this._gui._textBestOf.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this._gui._textBestOf.alpha = 0
-
-    this._gui._textPowerBy = new BABYLON.GUI.TextBlock()
-    this._gui._textPowerBy.fontFamily = 'Microsoft YaHei'
-    this._gui._textPowerBy.resizeToFit = true
-    this._gui._textPowerBy.text = '3D POWER BY BABYLON JS'
-    this._gui._textPowerBy.fontSize = '16px'
-    this._gui._textPowerBy.color = 'white'
-    this._gui._textPowerBy.scaleY = 0.5
-    this._gui._textPowerBy.scaleX = 0.5
-    this._gui._textPowerBy.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this._gui._textPowerBy.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this._gui._textPowerBy.alpha = 0
-
-    this._gui._advancedTexture.addControl(this._gui._textCompany)
-    this._gui._advancedTexture.addControl(this._gui._textBestOf)
-    this._gui._advancedTexture.addControl(this._gui._textPowerBy)
-  }
-
+  /** GUI 移动至屏幕中心 */
   GUI_LABEL_REMOVE_TO_CENTER () {
-    this._gui._textCompany.left = (this._game._canvas.width - this._gui._textCompany._width.internalValue) / 2 + 'px'
-    this._gui._textCompany.top = (this._game._canvas.height - this._gui._textCompany._height.internalValue) / 2 + 'px'
-    this._gui._textBestOf.left = (this._game._canvas.width - this._gui._textBestOf._width.internalValue) / 2 + 'px'
-    this._gui._textBestOf.top = this._gui._textCompany._top.internalValue + this._gui._textCompany._height.internalValue + 0 + 'px'
-    this._gui._textPowerBy.left = (this._game._canvas.width - this._gui._textPowerBy._width.internalValue) / 2 + 'px'
-    this._gui._textPowerBy.top = this._gui._textBestOf._top.internalValue + this._gui._textBestOf._height.internalValue / 2 + 0 + 'px'
+    this.guis.textCompany.left = (this.game._canvas.width - this.guis.textCompany._width.internalValue) / 2 + 'px'
+    this.guis.textCompany.top = (this.game._canvas.height - this.guis.textCompany._height.internalValue) / 2 + 'px'
+    this.guis.textBestOf.left = (this.game._canvas.width - this.guis.textBestOf._width.internalValue) / 2 + 'px'
+    this.guis.textBestOf.top = this.guis.textCompany._top.internalValue + this.guis.textCompany._height.internalValue + 0 + 'px'
+    this.guis.textPowerBy.left = (this.game._canvas.width - this.guis.textPowerBy._width.internalValue) / 2 + 'px'
+    this.guis.textPowerBy.top = this.guis.textBestOf._top.internalValue + this.guis.textBestOf._height.internalValue / 2 + 0 + 'px'
   }
 
   GUI_LABEL_MOVE_TO_END () {
     const duration = this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME
 
-    const t0 = this.FPS * this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME / 1000
-    const t1 = this.FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME) / 1000
-    const t2 = this.FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2) / 1000
+    const t0 = FPS * this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME / 1000
+    const t1 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME) / 1000
+    const t2 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2) / 1000
 
-    const w = this._game._canvas.width
-    const h = this._game._canvas.height
+    const w = this.game._canvas.width
+    const h = this.game._canvas.height
 
-    const ui = this._gui
+    const ui = this.guis
 
     const tb0 = {
-      x: ((w - ui._textCompany._width.internalValue) - ui._textCompany._left.internalValue) / t0,
-      y: ((h - ui._textCompany._height.internalValue) - ui._textCompany._top.internalValue) / t0
+      x: ((w - ui.textCompany._width.internalValue) - ui.textCompany._left.internalValue) / t0,
+      y: ((h - ui.textCompany._height.internalValue) - ui.textCompany._top.internalValue) / t0
     }
     const tb1 = {
-      x: ((w - ui._textBestOf._width.internalValue) - ui._textBestOf._left.internalValue) / t1,
-      y: ((h - ui._textBestOf._height.internalValue - ui._textCompany._height.internalValue) - ui._textBestOf._top.internalValue) / t1
+      x: ((w - ui.textBestOf._width.internalValue) - ui.textBestOf._left.internalValue) / t1,
+      y: ((h - ui.textBestOf._height.internalValue - ui.textCompany._height.internalValue) - ui.textBestOf._top.internalValue) / t1
     }
     const tb2 = {
-      x: ((w - ui._textPowerBy._width.internalValue + ui._textPowerBy._width.internalValue / 4) - ui._textPowerBy._left.internalValue) / t2,
-      y: ((h - ui._textPowerBy._height.internalValue + ui._textPowerBy._height.internalValue / 4) - ui._textCompany._height.internalValue - ui._textBestOf._height.internalValue - ui._textPowerBy._top.internalValue) / t2
+      x: ((w - ui.textPowerBy._width.internalValue + ui.textPowerBy._width.internalValue / 4) - ui.textPowerBy._left.internalValue) / t2,
+      y: ((h - ui.textPowerBy._height.internalValue + ui.textPowerBy._height.internalValue / 4) - ui.textCompany._height.internalValue - ui.textBestOf._height.internalValue - ui.textPowerBy._top.internalValue) / t2
     }
 
     let timed = 0
 
     let timer = setInterval(() => {
-      timed += 1000 / this.FPS
+      timed += 1000 / FPS
 
-      if (timed > 0 && timed < duration) ui._textCompany.left = ui._textCompany._left.internalValue + tb0.x + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui._textBestOf.left = ui._textBestOf._left.internalValue + tb1.x + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui._textPowerBy.left = ui._textPowerBy._left.internalValue + tb2.x + 'px'
+      if (timed > 0 && timed < duration) ui.textCompany.left = ui.textCompany._left.internalValue + tb0.x + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.left = ui.textBestOf._left.internalValue + tb1.x + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.left = ui.textPowerBy._left.internalValue + tb2.x + 'px'
 
-      if (timed > 0 && timed < duration) ui._textCompany.top = ui._textCompany._top.internalValue + tb0.y + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui._textBestOf.top = ui._textBestOf._top.internalValue + tb1.y + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui._textPowerBy.top = ui._textPowerBy._top.internalValue + tb2.y + 'px'
+      if (timed > 0 && timed < duration) ui.textCompany.top = ui.textCompany._top.internalValue + tb0.y + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.top = ui.textBestOf._top.internalValue + tb1.y + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.top = ui.textPowerBy._top.internalValue + tb2.y + 'px'
 
       timed >= duration && window.clearInterval(timer)
-    }, 1000 / this.FPS)
+    }, 1000 / FPS)
   }
-
   GUI_MESH_SHOW (onMeshLoaded, onAnimationEnd) {
     BABYLON.SceneLoader
-      .ImportMeshAsync('plane', './static/assets/resources/', 'LoadingUI.babylon', this._game._scene)
+      .ImportMeshAsync('plane', './static/assets/resources/', 'LoadingUI.babylon', this.game.scene)
       .then(({meshes, skeletons}) => {
         onMeshLoaded()
         meshes[0].material.freeze()
@@ -124,7 +158,7 @@ class SceneLoading {
         meshes[0].material.alphaMode = BABYLON.Engine.ALPHA_ADD
 
         setTimeout(() => {
-          this._game._scene.beginAnimation(skeletons[0], 0, 26, false, 1, () => {
+          this.game.scene.beginAnimation(skeletons[0], 0, 26, false, 1, () => {
             meshes[0].dispose()
             onAnimationEnd()
           })
@@ -133,7 +167,7 @@ class SceneLoading {
   }
 
   GUI_LOADING_MESSAGE_SHOW () {
-    this._loadingText = new LoadingProgressText(this._game)
+    this._loadingText = new LoadingProgressText(this.game)
     this._loadingText.show('同步网络信息')
     setTimeout(() => {
       this._loadingText.show('基因模型重组')
@@ -141,7 +175,7 @@ class SceneLoading {
   }
 
   PARTICLE_SHOW () {
-    this._particleSys = new BABYLON.ParticleSystem('particles', 1000, this._game._scene)
+    this._particleSys = new BABYLON.ParticleSystem('particles', 1000, this.game.scene)
     this._particleSys.particleTexture = new BABYLON.Texture('./static/assets/images/flare.png', this._scene)
 
     // Where the particles come from
@@ -203,23 +237,98 @@ class SceneLoading {
     _aniMaxEmitPower.setKeys(_keyMaxEmitPower)
     _aniUpdateSpeed.setKeys(_keyUpdateSpeed)
 
-    this._game._scene.beginDirectAnimation(this._particleSys, [_aniEmitRate, _aniMinSize, _aniMaxSize, _aniMaxEmitPower, _aniUpdateSpeed], 0, 100)
+    this.game.scene.beginDirectAnimation(this._particleSys, [_aniEmitRate, _aniMinSize, _aniMaxSize, _aniMaxEmitPower, _aniUpdateSpeed], 0, 100)
     // setTimeout(() => {
     //   this._particleSys.emitRate = 100
     // }, 500)
   }
 
-  start () {
-    let ALPHA_STEP = 1 / (this.GUI_BEGIN_ALPHA_CHANGE_TIME / 1000) * this.FPS / 1000
+  run () {
+    const game = this.game
+    const scene = game.scene
+
+    // #region 加载飞溅动画网格
+    /** 飞溅网格加载完毕回调函数，可能为空函数。
+     * 当在GUI等待时间内加载完毕，如GUI等待时间已过尚未加载完毕，此方法会被复写为下文中 splashShow 方法
+     */
+    let splashReadyCallback = () => {}
+    BABYLON.SceneLoader.ImportMeshAsync(
+        MESH_SPLASH_ASSETS_NAME,
+        MESH_SPLASH_FILE_PATH,
+        MESH_SPLASH_FILE_NAME,
+        scene)
+      .then(({meshes, skeletons}) => {
+        this.splash = meshes[0]
+        this.splash.visibility = 0
+
+        this.splash.material.emissiveColor = new BABYLON.Color3(72 / 255, 145 / 255, 241 / 255)
+        this.splash.material.alphaMode = BABYLON.Engine.ALPHA_ADD
+        this.splashIsReady = true
+        splashReadyCallback()
+      })
+    // #endregion
+
+    /** 飞溅网格显示并在一定延时开启动画和GUI移动至右下角 */
+    const splashShow = () => {
+      this.GUI_MESH_SHOW(() => {
+        this.GUI_LABEL_MOVE_TO_END()
+      }, () => {
+        this.PARTICLE_SHOW()
+        this.GUI_LOADING_MESSAGE_SHOW()
+      })
+    }
+
+    setTimeout(() => {
+      this.GUI_LABEL_REMOVE_TO_CENTER()
+      let opacity = 0
+      let opacityTimer = setInterval(() => {
+        opacity += GUI_BEGIN_FADE_IN_OPACITY_STEP
+
+        this.guis.textCompany.alpha = opacity
+        this.guis.textBestOf.alpha = opacity
+        this.guis.textPowerBy.alpha = opacity
+
+        if (opacity >= 1) { // 如果透明度为1，入场结束
+          setTimeout(() => { // 等待一定时间后准备显示飞溅网格
+            if (this.splashIsReady) splashShow()
+            else splashReadyCallback = splashShow
+          }, GUI_BEGIN_WATTING_TIME)
+          window.clearInterval(opacityTimer) // 清理时钟
+        }
+      }, 1000 / FPS)
+    }, GUI_LABEL_READY_TIME)
+    // game.camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 2, Math.PI / 2, 4, BABYLON.Vector3.Zero(), scene)
+
+    // var plane = BABYLON.MeshBuilder.CreatePlane('plane', {height: 10, width: 10, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene)
+
+    // var shaderMaterial = new BABYLON.ShaderMaterial('shader', scene, {
+    //   vertex: 'star',
+    //   fragment: 'star'
+    // }, {
+    //   attributes: ['position', 'uv'],
+    //   uniforms: ['time', 'world', 'worldView', 'worldViewProjection', 'view', 'projection']
+    // })
+    // var mainTexture = new BABYLON.Texture('./static/assets/images/star.png', scene)
+    // shaderMaterial.setTexture('textureSampler', mainTexture)
+
+    // let time = 0
+    // setInterval(() => {
+    //   time += 0.01
+    //   shaderMaterial.setFloat('time', time)
+    // }, 1000 / 60)
+
+    // plane.material = shaderMaterial
+    return
+    let ALPHA_STEP = 1 / (this.GUI_BEGIN_ALPHA_CHANGE_TIME / 1000) * FPS / 1000
     setTimeout(() => {
       this.GUI_LABEL_REMOVE_TO_CENTER()
       let TEMP_ALPHA = 0
       let ALPHA_TIMER = setInterval(() => {
         TEMP_ALPHA = TEMP_ALPHA + ALPHA_STEP
 
-        this._gui._textCompany.alpha = TEMP_ALPHA
-        this._gui._textBestOf.alpha = TEMP_ALPHA
-        this._gui._textPowerBy.alpha = TEMP_ALPHA
+        this.guis.textCompany.alpha = TEMP_ALPHA
+        this.guis.textBestOf.alpha = TEMP_ALPHA
+        this.guis.textPowerBy.alpha = TEMP_ALPHA
 
         TEMP_ALPHA >= 1 && setTimeout(() => {
           this.GUI_MESH_SHOW(() => {
@@ -229,14 +338,14 @@ class SceneLoading {
             this.GUI_LOADING_MESSAGE_SHOW()
           })
         }, this.GUI_SHOW_WAITING_TIME) && window.clearInterval(ALPHA_TIMER)
-      }, 1000 / this.FPS)
-    }, this.GUI_LABEL_READY_TIME)
+      }, 1000 / FPS)
+    }, GUI_LABEL_READY_TIME)
   }
 }
 
 class LoadingProgressText {
   constructor (game) {
-    this._game = game
+    this.game = game
 
     this._text = ''
     this._textCache = ''
@@ -251,7 +360,7 @@ class LoadingProgressText {
     this.INIT_TEXTBLOCK()
   }
   INIT_TEXTBLOCK () {
-    this._advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('ui2', true, this._game._scene)
+    this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('ui2', true, this.game.scene)
 
     this._textBlock = new BABYLON.GUI.TextBlock()
     this._textBlock.fontFamily = 'Microsoft YaHei'
@@ -264,7 +373,7 @@ class LoadingProgressText {
     this._textBlock.alpha = 1
     this._textBlock.left = '14px'
     this._textBlock.top = '28px'
-    this._advancedTexture.addControl(this._textBlock)
+    this.advancedTexture.addControl(this._textBlock)
   }
 
   show (text) {
