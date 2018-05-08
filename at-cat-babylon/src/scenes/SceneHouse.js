@@ -73,6 +73,45 @@ class SceneHouse extends Scene {
       })
   }
 
+  async load () {
+    const [{scene}] = [this.game]
+
+    let house = {
+      _root: { ex: /__root__/ },
+      __meshes: {
+        names: ['house_mesh', 'house_pillar_mesh', 'house_planks_mesh', 'house_frame_mesh', 'house_carpet_mesh', 'house_bowl_water_mesh',
+          'house_floor_mesh', 'house_board_mesh', 'house_bowl_food_mesh'],
+        ex: /_mesh$/g
+      },
+      root: null,
+      meshs: {
+
+      }
+    }
+    const {ImportMeshAsync: I} = BABYLON.SceneLoader
+    await I('', './static/assets/resources/house/', 'house.gltf', scene,
+      ({lengthComputable: c, loaded: l, total: t}) => {
+
+      }).then(({meshes: ms}) => {
+        ms.map(m => {
+          let { name: n } = m
+
+          if (house._root.ex.test(n)) house.root = m
+
+          if (house.__meshes.names.includes(n) && house.__meshes.ex.test(n)) {
+            house.meshs[n] = m
+          } else {
+            console.log(house.__meshes.names.includes(n))
+          }
+          // console.log(house._meshs.ex.test(n) && house._meshs.names.includes(n), n, m)
+        })
+        console.log(Object.keys(house.meshs))
+        setTimeout(() => {
+          console.log(Object.keys(house.meshs))
+        }, 1000)
+      })
+  }
+
   run () {
     if (MAKE_TARGET) return this.computeTarget('body-fat-min')
 
@@ -80,7 +119,7 @@ class SceneHouse extends Scene {
     const scene = game.scene
 
     this.loadSkyBox()
-      // .then(() => this.loadHouseMesh())
+      .then(() => this.loadHouseMesh())
       .then(() => {
         scene.shadowsEnabled = true
 

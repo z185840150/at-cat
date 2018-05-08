@@ -26,15 +26,33 @@ class SceneLoading {
    * @type {BABYLON.Mesh}
    */
   get splash () { return this._splash }
+  /** 飞溅动画网格骨骼 */
+  get splashSkeletons () { return this._splashSkeletons }
   /** 飞溅网格动画加载完毕
    * @type {boolean}
    */
   get splashIsReady () { return this._splashIsReady }
+  /** 星空网格 */
+  get star () { return this._star }
+  /** 星空网格材质 */
+  get starMaterial () { return this._starMaterial }
+  /** 星空网格时间 */
+  get starShaderTime () { return this._starShaderTime }
+  /** 星空网格时钟 */
+  get starShaderTimer () { return this._starShaderTimer }
+  /** 星空运动速度 */
+  get starSpeed () { return this._starSpeed }
 
   set game (val) { this._game = val }
   set guis (val) { this._guis = val }
   set splash (val) { this._splash = val }
+  set splashSkeletons (val) { this._splashSkeletons = val }
   set splashIsReady (val) { this._splashIsReady = val }
+  set star (val) { this._star = val }
+  set starMaterial (val) { this._starMaterial = val }
+  set starShaderTime (val) { this._starShaderTime = val }
+  set starShaderTimer (val) { this._starShaderTimer = val }
+  set starSpeed (val) { this._starSpeed = val }
   /**
    * Creates an instance of SceneLoading.
    * @param {Game} game - 游戏
@@ -43,6 +61,8 @@ class SceneLoading {
   constructor (game) {
     this._game = game
     this._splashIsReady = false
+    this._starShaderTime = 0
+    this._starSpeed = 0.01
 
     this.GUI_BEGIN_ALPHA_CHANGE_TIME = 500
     this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME = 1000
@@ -94,6 +114,24 @@ class SceneLoading {
     this.guis.advancedTexture.addControl(this.guis.textBestOf)
     this.guis.advancedTexture.addControl(this.guis.textPowerBy)
     // #endregion
+
+    this.starMaterial = new BABYLON.ShaderMaterial('star-material', this.game.scene, {
+      vertex: 'star',
+      fragment: 'star'
+    }, {
+      attributes: ['position', 'uv'],
+      uniforms: ['time', 'world', 'worldView', 'worldViewProjection', 'view', 'projection']
+    })
+
+    this.starMaterial.setTexture('textureSampler', new BABYLON.Texture('./static/assets/images/star.png', this.game.scene))
+
+    // 初始化渲染管线
+    this.game.pipeline.samples = 1 // 多采样抗锯齿 1~4 默认：1
+    this.game.pipeline.fxaaEnabled = false // 快速抗锯齿，默认：false
+    this.game.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
+    this.game.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
+    this.game.pipeline.imageProcessing.exposure = 1 // Camera exposure, range 1-4, default 1
+    this.game.pipeline.bloomEnabled = false // Bloom, default false
   }
 
   /** GUI 移动至屏幕中心 */
@@ -106,6 +144,7 @@ class SceneLoading {
     this.guis.textPowerBy.top = this.guis.textBestOf._top.internalValue + this.guis.textBestOf._height.internalValue / 2 + 0 + 'px'
   }
 
+  /** GUI 移动至屏幕右下角 */
   GUI_LABEL_MOVE_TO_END () {
     const duration = this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME
 
@@ -247,11 +286,11 @@ class SceneLoading {
     const game = this.game
     const scene = game.scene
 
-    // #region 加载飞溅动画网格
     /** 飞溅网格加载完毕回调函数，可能为空函数。
      * 当在GUI等待时间内加载完毕，如GUI等待时间已过尚未加载完毕，此方法会被复写为下文中 splashShow 方法
      */
     let splashReadyCallback = () => {}
+    // 加载飞溅动画网格
     BABYLON.SceneLoader.ImportMeshAsync(
         MESH_SPLASH_ASSETS_NAME,
         MESH_SPLASH_FILE_PATH,
@@ -259,25 +298,68 @@ class SceneLoading {
         scene)
       .then(({meshes, skeletons}) => {
         this.splash = meshes[0]
+        this.splashSkeletons = skeletons[0]
         this.splash.visibility = 0
 
-        this.splash.material.emissiveColor = new BABYLON.Color3(72 / 255, 145 / 255, 241 / 255)
+        this.splash.material.emissiveColor = new BABYLON.Color3(255 / 255, 145 / 255, 72 / 255)
         this.splash.material.alphaMode = BABYLON.Engine.ALPHA_ADD
         this.splashIsReady = true
         splashReadyCallback()
       })
-    // #endregion
 
     /** 飞溅网格显示并在一定延时开启动画和GUI移动至右下角 */
     const splashShow = () => {
-      this.GUI_MESH_SHOW(() => {
-        this.GUI_LABEL_MOVE_TO_END()
-      }, () => {
-        this.PARTICLE_SHOW()
-        this.GUI_LOADING_MESSAGE_SHOW()
-      })
+      this.GUI_LABEL_MOVE_TO_END()
+      this.splash.visibility = 1
+      setTimeout(() => {
+        setTimeout(() => { starShow() }, 900)
+        scene.beginAnimation(this.splashSkeletons, 0, 26, false, 1, () => {
+          // this.PARTICLE_SHOW()
+          this.GUI_LOADING_MESSAGE_SHOW()
+          this.splash.dispose()
+        })
+      }, 750)
+    }
+    /** 显示星空 */
+    const starShow = () => {
+      // 播放音频
+      const soundOpt = {
+        loop: true,
+        autoplay: true,
+        volume: 0
+      }
+      this.sound = new BABYLON.Sound('loading-sound', './static/assets/sounds/loading.mp3', scene, null, soundOpt)
+      // 载入星空平面
+      const options = {
+        height: 10,
+        width: 10,
+        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+      }
+      this.star = BABYLON.MeshBuilder.CreatePlane('star-plane', options, scene)
+      this.star.visibility = 0
+      this.star.material = this.starMaterial
+      this.star.visibility = 1
+      this.starSpeed = 0.05
+
+      let speedKey = [{frame: 0, value: 0.05}, {frame: 30, value: 0.03}, {frame: 60, value: 0.01}]
+
+      let aniSpeed = new BABYLON.Animation('star-speed-animation', 'starSpeed', 24, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
+
+      aniSpeed.setKeys(speedKey)
+
+      scene.beginDirectAnimation(this, [aniSpeed], 0, 60)
+
+      this.starShaderTimer = setInterval(() => {
+        this.starShaderTime += this.starSpeed
+        this.starMaterial.setFloat('time', this.starShaderTime)
+      }, 1000 / 60)
+      /** 绑定重力加速度 */
+      window.DeviceOrientationEvent && window.addEventListener('deviceorientation', e => {
+        this.star.position = new BABYLON.Vector3(e.gamma / 90 * 2, e.beta / 180 * 2, 0)
+      }, true)
     }
 
+    // 开始
     setTimeout(() => {
       this.GUI_LABEL_REMOVE_TO_CENTER()
       let opacity = 0
@@ -291,53 +373,10 @@ class SceneLoading {
         if (opacity >= 1) { // 如果透明度为1，入场结束
           setTimeout(() => { // 等待一定时间后准备显示飞溅网格
             if (this.splashIsReady) splashShow()
-            else splashReadyCallback = splashShow
+            else splashReadyCallback = () => { splashShow() }
           }, GUI_BEGIN_WATTING_TIME)
           window.clearInterval(opacityTimer) // 清理时钟
         }
-      }, 1000 / FPS)
-    }, GUI_LABEL_READY_TIME)
-    // game.camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 2, Math.PI / 2, 4, BABYLON.Vector3.Zero(), scene)
-
-    // var plane = BABYLON.MeshBuilder.CreatePlane('plane', {height: 10, width: 10, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene)
-
-    // var shaderMaterial = new BABYLON.ShaderMaterial('shader', scene, {
-    //   vertex: 'star',
-    //   fragment: 'star'
-    // }, {
-    //   attributes: ['position', 'uv'],
-    //   uniforms: ['time', 'world', 'worldView', 'worldViewProjection', 'view', 'projection']
-    // })
-    // var mainTexture = new BABYLON.Texture('./static/assets/images/star.png', scene)
-    // shaderMaterial.setTexture('textureSampler', mainTexture)
-
-    // let time = 0
-    // setInterval(() => {
-    //   time += 0.01
-    //   shaderMaterial.setFloat('time', time)
-    // }, 1000 / 60)
-
-    // plane.material = shaderMaterial
-    return
-    let ALPHA_STEP = 1 / (this.GUI_BEGIN_ALPHA_CHANGE_TIME / 1000) * FPS / 1000
-    setTimeout(() => {
-      this.GUI_LABEL_REMOVE_TO_CENTER()
-      let TEMP_ALPHA = 0
-      let ALPHA_TIMER = setInterval(() => {
-        TEMP_ALPHA = TEMP_ALPHA + ALPHA_STEP
-
-        this.guis.textCompany.alpha = TEMP_ALPHA
-        this.guis.textBestOf.alpha = TEMP_ALPHA
-        this.guis.textPowerBy.alpha = TEMP_ALPHA
-
-        TEMP_ALPHA >= 1 && setTimeout(() => {
-          this.GUI_MESH_SHOW(() => {
-            this.GUI_LABEL_MOVE_TO_END()
-          }, () => {
-            this.PARTICLE_SHOW()
-            this.GUI_LOADING_MESSAGE_SHOW()
-          })
-        }, this.GUI_SHOW_WAITING_TIME) && window.clearInterval(ALPHA_TIMER)
       }, 1000 / FPS)
     }, GUI_LABEL_READY_TIME)
   }

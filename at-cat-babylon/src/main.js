@@ -69,7 +69,7 @@ import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
-const DEBUG = false // 控制是否游戏中渲染Debug层
+const DEBUG = true // 控制是否游戏中渲染Debug层
 
 export default class Game {
   // #region 属性
@@ -159,9 +159,10 @@ export default class Game {
     this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
 
     // 初始化渲染摄像机
-    this.camera = new BABYLON.FreeCamera('MAIN_CAMERA', new BABYLON.Vector3(0, 0, 10), this.scene)
+    this.camera = new BABYLON.ArcRotateCamera('MAIN_CAMERA', 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), this.scene)
+    this.camera.setPosition(new BABYLON.Vector3(0, 0, 10))
     this.camera.setTarget(BABYLON.Vector3.Zero())
-    this.camera.attachControl(this.canvas, true)
+    // this.camera.attachControl(this.canvas, true)
 
     // 初始化主灯光以及阴影发生器
     this.light = new BABYLON.PointLight('MAIN_LIGHT', new BABYLON.Vector3(0, 1, 0), this.scene)
@@ -201,8 +202,8 @@ export default class Game {
     this.engine.runRenderLoop(() => this.scene.render()) // 引擎开始循环渲染
     DEBUG && this.scene.debugLayer.show() // 是否渲染Debug层
 
-    new SceneLoading(this).run()
-    // new Scenehouse(this).run() // 场景开始
+    // new SceneLoading(this).run()
+    new Scenehouse(this).load() // 场景开始
   }
 }
 

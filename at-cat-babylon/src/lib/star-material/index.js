@@ -69,8 +69,8 @@ BABYLON.Effect.ShadersStore['starPixelShader'] = `
 
     vec3 stp = ray / max(abs(ray.x), abs(ray.y));
 
-    vec3 pos = 2.0*stp+.5;
-    for (int i = 0; i < 20; i++) {
+    vec3 pos = 2.0 * stp + .5;
+    for (int i = 0; i < 10; i++) {
       float z = Noise(ivec2(pos.xy)).x;
       z = fract(z - offset);
       float d = 50.0 * z - pos.z;
@@ -80,7 +80,7 @@ BABYLON.Effect.ShadersStore['starPixelShader'] = `
       pos += stp;
     }
 
-    gl_FragColor = vec4(ToGamma(col), 1.0);
+    gl_FragColor = vec4(ToGamma(col), 1.);
     //gl_FragColor = vec4(ray.g, 0, 0, 1.);
   }
 `
