@@ -24,18 +24,7 @@ const GUI_BEGIN_FADE_IN_OPACITY_STEP = 1 / (GUI_BEGIN_FADE_IN_DURATION / 1000) *
 const GUI_BEGIN_WATTING_TIME = 1000
 
 class SceneLoading extends Scene {
-  get game () { return this._game }
   get guis () { return this._guis }
-  /** 飞溅动画网格
-   * @type {BABYLON.Mesh}
-   */
-  get splash () { return this._splash }
-  /** 飞溅动画网格骨骼 */
-  get splashSkeletons () { return this._splashSkeletons }
-  /** 飞溅网格动画加载完毕
-   * @type {boolean}
-   */
-  get splashIsReady () { return this._splashIsReady }
   /** 星空网格 */
   get star () { return this._star }
   /** 星空网格材质 */
@@ -47,106 +36,12 @@ class SceneLoading extends Scene {
   /** 星空运动速度 */
   get starSpeed () { return this._starSpeed }
 
-  set game (val) { this._game = val }
   set guis (val) { this._guis = val }
-  set splash (val) { this._splash = val }
-  set splashSkeletons (val) { this._splashSkeletons = val }
-  set splashIsReady (val) { this._splashIsReady = val }
   set star (val) { this._star = val }
   set starMaterial (val) { this._starMaterial = val }
   set starShaderTime (val) { this._starShaderTime = val }
   set starShaderTimer (val) { this._starShaderTimer = val }
   set starSpeed (val) { this._starSpeed = val }
-
-  init () {
-    this.guis = {}
-
-    this.guis.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('Begin-Scene-GUI', true, this.game.scene)
-    this.guis.advancedTexture.renderAtIdealSize = false
-
-    // #region 初始化标签
-    this.guis.textCompany = new BABYLON.GUI.TextBlock()
-    this.guis.textCompany.fontFamily = 'Microsoft YaHei'
-    this.guis.textCompany.fontSize = '32px'
-    this.guis.textCompany.color = 'white'
-    this.guis.textCompany.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this.guis.textCompany.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this.guis.textCompany.resizeToFit = true
-    this.guis.textCompany.text = 'Parity Ltd. Present'
-    this.guis.textCompany.alpha = 0
-
-    this.guis.textBestOf = new BABYLON.GUI.TextBlock()
-    this.guis.textBestOf.fontFamily = 'Microsoft YaHei'
-    this.guis.textBestOf.resizeToFit = true
-    this.guis.textBestOf.text = 'BEST OF 2018-2020'
-    this.guis.textBestOf.fontSize = '14px'
-    this.guis.textBestOf.color = 'white'
-    this.guis.textBestOf.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this.guis.textBestOf.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this.guis.textBestOf.alpha = 0
-
-    this.guis.textPowerBy = new BABYLON.GUI.TextBlock()
-    this.guis.textPowerBy.fontFamily = 'Microsoft YaHei'
-    this.guis.textPowerBy.resizeToFit = true
-    this.guis.textPowerBy.text = '3D POWER BY BABYLON JS'
-    this.guis.textPowerBy.fontSize = '16px'
-    this.guis.textPowerBy.color = 'white'
-    this.guis.textPowerBy.scaleY = 0.5
-    this.guis.textPowerBy.scaleX = 0.5
-    this.guis.textPowerBy.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
-    this.guis.textPowerBy.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
-    this.guis.textPowerBy.alpha = 0
-
-    this.guis.advancedTexture.addControl(this.guis.textCompany)
-    this.guis.advancedTexture.addControl(this.guis.textBestOf)
-    this.guis.advancedTexture.addControl(this.guis.textPowerBy)
-    // #endregion
-
-    this.starMaterial = new BABYLON.ShaderMaterial('star-material', this.game.scene, {
-      vertex: 'star',
-      fragment: 'star'
-    }, {
-      attributes: ['position', 'uv'],
-      uniforms: ['time', 'world', 'worldView', 'worldViewProjection', 'view', 'projection']
-    })
-
-    this.starMaterial.setTexture('textureSampler', new BABYLON.Texture('./static/assets/images/star.png', this.game.scene))
-
-    // 初始化渲染管线
-    this.game.pipeline.samples = 1 // 多采样抗锯齿 1~4 默认：1
-    this.game.pipeline.fxaaEnabled = false // 快速抗锯齿，默认：false
-    this.game.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
-    this.game.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
-    this.game.pipeline.imageProcessing.exposure = 1 // Camera exposure, range 1-4, default 1
-    this.game.pipeline.bloomEnabled = false // Bloom, default false
-  }
-
-  GUI_MESH_SHOW (onMeshLoaded, onAnimationEnd) {
-    BABYLON.SceneLoader
-      .ImportMeshAsync('plane', './static/assets/resources/', 'LoadingUI.babylon', this.game.scene)
-      .then(({meshes, skeletons}) => {
-        onMeshLoaded()
-        meshes[0].material.freeze()
-
-        meshes[0].material.emissiveColor = new BABYLON.Color3(72 / 255, 145 / 255, 241 / 255)
-        meshes[0].material.alphaMode = BABYLON.Engine.ALPHA_ADD
-
-        setTimeout(() => {
-          this.game.scene.beginAnimation(skeletons[0], 0, 26, false, 1, () => {
-            meshes[0].dispose()
-            onAnimationEnd()
-          })
-        }, 750)
-      })
-  }
-
-  GUI_LOADING_MESSAGE_SHOW () {
-    this._loadingText = new LoadingProgressText(this.game)
-    this._loadingText.show('同步网络信息')
-    setTimeout(() => {
-      this._loadingText.show('基因模型重组')
-    }, 1000)
-  }
 
   PARTICLE_SHOW () {
     this._particleSys = new BABYLON.ParticleSystem('particles', 1000, this.game.scene)
@@ -417,6 +312,7 @@ class SceneLoading extends Scene {
   }
 
   // custom method
+  __loadHouseScene () {}
   /**
    * GUI 移动至屏幕中心
    *
@@ -478,8 +374,99 @@ class SceneLoading extends Scene {
       timed >= duration && window.clearInterval(timer)
     }, 1000 / FPS)
   }
+  /**
+   * GUI 进度文本显示
+   *
+   * @memberof SceneLoading
+   */
+  __guiTextLoadingProgressShow () {
+    this._loadingText = new LoadingProgressText(this.game)
+    this._loadingText.show('连接宇宙网络')
+    setTimeout(() => {
+      this._loadingText.show('网格化居所')
+    }, 1000)
+  }
+  /**
+   * 显示飞溅网格并播放动画
+   *
+   * @memberof SceneLoading
+   */
   __splashMeshShow () {
+    this.__guiTextRemoveToScreenRB()
 
+    const [{outline}, {scene}] = [this, this.game]
+
+    outline.get('splash').root.material.emissiveColor = new BABYLON.Color3(72 / 255, 145 / 255, 241 / 255)
+    outline.get('splash').root.material.alphaMode = BABYLON.Engine.ALPHA_ADD
+    outline.get('splash').root.visibility = 1
+
+    setTimeout(() => {
+      setTimeout(() => {
+        this.__soundPlay()
+        this.__starShow()
+      }, 900)
+      scene.beginAnimation(outline.get('splash').root.skeleton, 0, 26, false, 1, () => {
+        // this.PARTICLE_SHOW()
+        this.__guiTextLoadingProgressShow()
+        outline.get('splash').root.dispose()
+      })
+    }, 750)
+  }
+  /**
+   * 播放音频
+   *
+   * @memberof SceneLoading
+   */
+  __soundPlay () {
+    this.sound = new BABYLON.Sound('loading-sound', './static/assets/sounds/loading.mp3', this.game.scene, null, {
+      loop: true,
+      autoplay: true,
+      volume: 1
+    })
+  }
+  /**
+   * 显示星空背景
+   *
+   * @memberof SceneLoading
+   */
+  __starShow () {
+    // 载入星空平面
+    const options = {
+      height: 10,
+      width: 10,
+      sideOrientation: BABYLON.Mesh.DOUBLESIDE
+    }
+    this.star = BABYLON.MeshBuilder.CreatePlane('star-plane', options, this.game.scene)
+    this.star.visibility = 0
+    this.star.material = this.starMaterial
+    this.star.visibility = 1
+    this.starSpeed = 0.05
+
+    let speedKey = [{frame: 0, value: 0.05}, {frame: 30, value: 0.03}, {frame: 60, value: 0.01}]
+
+    let aniSpeed = new BABYLON.Animation('star-speed-animation', 'starSpeed', 24, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT)
+
+    aniSpeed.setKeys(speedKey)
+
+    this.game.scene.beginDirectAnimation(this, [aniSpeed], 0, 60)
+
+    this.starShaderTimer = setInterval(() => {
+      this.starShaderTime += this.starSpeed
+      this.starMaterial.setFloat('time', this.starShaderTime)
+    }, 1000 / 60)
+
+    this.__starBindDeviceOrientation()
+    this.__loadHouseScene()
+  }
+  /**
+   * 星空背景绑定重力感应事件
+   *
+   * @memberof SceneLoading
+   */
+  __starBindDeviceOrientation () {
+    window.DeviceOrientationEvent && window.addEventListener('deviceorientation', e => {
+      this.star.position = new BABYLON.Vector3(e.gamma / 90 * 2, e.beta / 180 * 2, 0)
+    }, true)
   }
 }
 

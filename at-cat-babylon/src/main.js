@@ -64,12 +64,13 @@ import 'babylonjs-loaders'
 import './lib/fur-material'
 import './lib/star-material'
 
+import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
 import {Game} from './lib/@cat/index'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
-const DEBUG = true // 控制是否游戏中渲染Debug层
+const DEBUG = false // 控制是否游戏中渲染Debug层
 
 class AtCatGame extends Game {
   initOverride () {
@@ -105,11 +106,20 @@ class AtCatGame extends Game {
   }
 
   startOverride () {
-    // new SceneLoading(this).run()
-    // 场景开始
-    new Scenehouse(this).loadAssetsAsync(p => {
-      console.log(p)
+    const loading = new SceneLoading(this)
+
+    loading.loadAssetsAsync(p => {
+      // console.log(p)
+    }).then(() => {
+      loading.run()
     })
+    loading.__loadHouseScene = () => {
+      // 场景开始
+      new Scenehouse(this).loadAssetsAsync(p => {
+        // console.log(p)\
+        document.title = p
+      })
+    }
   }
 }
 
