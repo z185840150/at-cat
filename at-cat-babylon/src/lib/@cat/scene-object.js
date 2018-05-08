@@ -64,6 +64,14 @@ export default class SceneObject {
       for (let mesh of this.childs.values()) mesh.visibility = val ? 1 : 0
     }
   }
+  /**
+   * 资源已经被加载
+   *
+   * @type {boolean}
+   * @memberof SceneObject
+   */
+  get assetsIsLoaded () { return this._assetsIsLoaded }
+  set assetsIsLoaded (val) { this._assetsIsLoaded = val }
 
   /**
    * 构造函数

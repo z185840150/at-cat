@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import Game from './game'
-import Outline from './outline'
+import {Game, SceneObject, Outline} from './index' // eslint-disable-line
 
 /**
  * 场景
