@@ -19,40 +19,40 @@ class SceneHouse extends Scene {
   }
 
   initOverride () {
-    const game = this.game
-    // 初始化场景
-    game.scene.ambientColor = new BABYLON.Color3(1, 1, 1)
-    // 初始化摄像机
-    game.camera.position = new BABYLON.Vector3(50, 10, 50)
-    game.camera.speed /= 1
-    game.camera.setTarget(BABYLON.Vector3.Zero())
+    // const game = this.game
+    // // 初始化场景
+    // game.scene.ambientColor = new BABYLON.Color3(1, 1, 1)
+    // // 初始化摄像机
+    // game.camera.position = new BABYLON.Vector3(50, 10, 50)
+    // game.camera.speed /= 1
+    // game.camera.setTarget(BABYLON.Vector3.Zero())
 
-    // 初始化灯光
-    game.light.dispose()
-    game.light = new BABYLON.DirectionalLight('light default', new BABYLON.Vector3(-1, -2, 1), game.scene)
-    game.light.intensity = 1
-    game.light.position = new BABYLON.Vector3(20, 40, -20)
+    // // 初始化灯光
+    // game.light.dispose()
+    // game.light = new BABYLON.DirectionalLight('light default', new BABYLON.Vector3(-1, -2, 1), game.scene)
+    // game.light.intensity = 1
+    // game.light.position = new BABYLON.Vector3(20, 40, -20)
 
-    // 初始化灯光阴影发生器
-    game.shadowGenerator = new BABYLON.ShadowGenerator(1024, game.light)
-    game.shadowGenerator.usePoissonSampling = true
-    game.shadowGenerator.useExponentialShadowMap = true // Exponential shadow map
-    game.shadowGenerator.useBlurExponentialShadowMap = true
-    game.shadowGenerator.useCloseExponentialShadowMap = true
+    // // 初始化灯光阴影发生器
+    // game.shadowGenerator = new BABYLON.ShadowGenerator(1024, game.light)
+    // game.shadowGenerator.usePoissonSampling = true
+    // game.shadowGenerator.useExponentialShadowMap = true // Exponential shadow map
+    // game.shadowGenerator.useBlurExponentialShadowMap = true
+    // game.shadowGenerator.useCloseExponentialShadowMap = true
 
-    game.shadowGenerator.useBlurCloseExponentialShadowMap = true
-    game.shadowGenerator.usePercentageCloserFiltering = true // Percentage Closer Filtering
-    game.shadowGenerator.filteringQuality = BABYLON.ShadowGenerator.QUALITY_LOW
-    game.shadowGenerator.useContactHardeningShadow = true // Contact hardening shadow (Webgl2 only)
-    game.shadowGenerator.forceBackFacesOnly = true
-    game.shadowGenerator.useKernelBlur = true
-    game.shadowGenerator.blurKernel = 32
+    // game.shadowGenerator.useBlurCloseExponentialShadowMap = true
+    // game.shadowGenerator.usePercentageCloserFiltering = true // Percentage Closer Filtering
+    // game.shadowGenerator.filteringQuality = BABYLON.ShadowGenerator.QUALITY_LOW
+    // game.shadowGenerator.useContactHardeningShadow = true // Contact hardening shadow (Webgl2 only)
+    // game.shadowGenerator.forceBackFacesOnly = true
+    // game.shadowGenerator.useKernelBlur = true
+    // game.shadowGenerator.blurKernel = 32
 
-    game.skybox && game.skybox.dispose()
-    game.skybox = null
-    game.skybox = game.scene.createDefaultSkybox(BABYLON.CubeTexture
-      .CreateFromPrefilteredData('./static/assets/resources/hdri/skybox.dds', game.scene), true, 1000, 0, true)
-    game.skybox.name = 'skybox default'
+    // game.skybox && game.skybox.dispose()
+    // game.skybox = null
+    // game.skybox = game.scene.createDefaultSkybox(BABYLON.CubeTexture
+    //   .CreateFromPrefilteredData('./static/assets/resources/hdri/skybox.dds', game.scene), true, 1000, 0, true)
+    // game.skybox.name = 'skybox default'
   }
 
   initOutlineOverride () {
@@ -65,7 +65,6 @@ class SceneHouse extends Scene {
 
   computeTarget (name) {
     this.loadSkyBox()
-
       .then(() => {
         BABYLON.SceneLoader.ImportMeshAsync(MESH_NAMES,
           './static/assets/resources/cat/babylon/',

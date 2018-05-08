@@ -106,7 +106,10 @@ class AtCatGame extends Game {
 
   startOverride () {
     // new SceneLoading(this).run()
-    new Scenehouse(this).load() // 场景开始
+    // 场景开始
+    new Scenehouse(this).loadAssetsAsync(p => {
+      console.log(p)
+    })
   }
 }
 

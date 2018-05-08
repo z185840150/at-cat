@@ -45,7 +45,7 @@ export default class SceneObjectAssets {
    * @param {String[]} childs 子节点资源名称
    * @memberof SceneObjectAssets
    */
-  constructor (path, file, root, childs) {
+  constructor (path, file, root = '__root__', childs = []) {
     this._path = path
     this._file = file
     this._root = root

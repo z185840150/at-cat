@@ -1,6 +1,10 @@
 import * as GUI from 'babylonjs-gui'
 import Game from './../main' // eslint-disable-line no-unused-vars
 
+import {Scene, SceneObject, SceneObjectAssets} from './../lib/@cat/index'
+
+const [{Texture, ShaderMaterial}, {TextBlock}] = [BABYLON, BABYLON.GUI]
+
 const FPS = 60
 
 const PARTICLE_START_TIME = 500 // eslint-disable-line no-unused-vars
@@ -19,7 +23,7 @@ const GUI_BEGIN_FADE_IN_OPACITY_STEP = 1 / (GUI_BEGIN_FADE_IN_DURATION / 1000) *
 /** GUI 入场后静止时间 */
 const GUI_BEGIN_WATTING_TIME = 1000
 
-class SceneLoading {
+class SceneLoading extends Scene {
   get game () { return this._game }
   get guis () { return this._guis }
   /** 飞溅动画网格
@@ -53,23 +57,6 @@ class SceneLoading {
   set starShaderTime (val) { this._starShaderTime = val }
   set starShaderTimer (val) { this._starShaderTimer = val }
   set starSpeed (val) { this._starSpeed = val }
-  /**
-   * Creates an instance of SceneLoading.
-   * @param {Game} game - 游戏
-   * @memberof SceneLoading
-   */
-  constructor (game) {
-    this._game = game
-    this._splashIsReady = false
-    this._starShaderTime = 0
-    this._starSpeed = 0.01
-
-    this.GUI_BEGIN_ALPHA_CHANGE_TIME = 500
-    this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME = 1000
-    this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME = 200
-
-    this.init()
-  }
 
   init () {
     this.guis = {}
@@ -134,58 +121,6 @@ class SceneLoading {
     this.game.pipeline.bloomEnabled = false // Bloom, default false
   }
 
-  /** GUI 移动至屏幕中心 */
-  GUI_LABEL_REMOVE_TO_CENTER () {
-    this.guis.textCompany.left = (this.game._canvas.width - this.guis.textCompany._width.internalValue) / 2 + 'px'
-    this.guis.textCompany.top = (this.game._canvas.height - this.guis.textCompany._height.internalValue) / 2 + 'px'
-    this.guis.textBestOf.left = (this.game._canvas.width - this.guis.textBestOf._width.internalValue) / 2 + 'px'
-    this.guis.textBestOf.top = this.guis.textCompany._top.internalValue + this.guis.textCompany._height.internalValue + 0 + 'px'
-    this.guis.textPowerBy.left = (this.game._canvas.width - this.guis.textPowerBy._width.internalValue) / 2 + 'px'
-    this.guis.textPowerBy.top = this.guis.textBestOf._top.internalValue + this.guis.textBestOf._height.internalValue / 2 + 0 + 'px'
-  }
-
-  /** GUI 移动至屏幕右下角 */
-  GUI_LABEL_MOVE_TO_END () {
-    const duration = this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME
-
-    const t0 = FPS * this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME / 1000
-    const t1 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME) / 1000
-    const t2 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2) / 1000
-
-    const w = this.game._canvas.width
-    const h = this.game._canvas.height
-
-    const ui = this.guis
-
-    const tb0 = {
-      x: ((w - ui.textCompany._width.internalValue) - ui.textCompany._left.internalValue) / t0,
-      y: ((h - ui.textCompany._height.internalValue) - ui.textCompany._top.internalValue) / t0
-    }
-    const tb1 = {
-      x: ((w - ui.textBestOf._width.internalValue) - ui.textBestOf._left.internalValue) / t1,
-      y: ((h - ui.textBestOf._height.internalValue - ui.textCompany._height.internalValue) - ui.textBestOf._top.internalValue) / t1
-    }
-    const tb2 = {
-      x: ((w - ui.textPowerBy._width.internalValue + ui.textPowerBy._width.internalValue / 4) - ui.textPowerBy._left.internalValue) / t2,
-      y: ((h - ui.textPowerBy._height.internalValue + ui.textPowerBy._height.internalValue / 4) - ui.textCompany._height.internalValue - ui.textBestOf._height.internalValue - ui.textPowerBy._top.internalValue) / t2
-    }
-
-    let timed = 0
-
-    let timer = setInterval(() => {
-      timed += 1000 / FPS
-
-      if (timed > 0 && timed < duration) ui.textCompany.left = ui.textCompany._left.internalValue + tb0.x + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.left = ui.textBestOf._left.internalValue + tb1.x + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.left = ui.textPowerBy._left.internalValue + tb2.x + 'px'
-
-      if (timed > 0 && timed < duration) ui.textCompany.top = ui.textCompany._top.internalValue + tb0.y + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.top = ui.textBestOf._top.internalValue + tb1.y + 'px'
-      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.top = ui.textPowerBy._top.internalValue + tb2.y + 'px'
-
-      timed >= duration && window.clearInterval(timer)
-    }, 1000 / FPS)
-  }
   GUI_MESH_SHOW (onMeshLoaded, onAnimationEnd) {
     BABYLON.SceneLoader
       .ImportMeshAsync('plane', './static/assets/resources/', 'LoadingUI.babylon', this.game.scene)
@@ -282,7 +217,7 @@ class SceneLoading {
     // }, 500)
   }
 
-  run () {
+  _run () {
     const game = this.game
     const scene = game.scene
 
@@ -292,10 +227,10 @@ class SceneLoading {
     let splashReadyCallback = () => {}
     // 加载飞溅动画网格
     BABYLON.SceneLoader.ImportMeshAsync(
-        MESH_SPLASH_ASSETS_NAME,
-        MESH_SPLASH_FILE_PATH,
-        MESH_SPLASH_FILE_NAME,
-        scene)
+      MESH_SPLASH_ASSETS_NAME,
+      MESH_SPLASH_FILE_PATH,
+      MESH_SPLASH_FILE_NAME,
+      scene)
       .then(({meshes, skeletons}) => {
         this.splash = meshes[0]
         this.splashSkeletons = skeletons[0]
@@ -379,6 +314,172 @@ class SceneLoading {
         }
       }, 1000 / FPS)
     }, GUI_LABEL_READY_TIME)
+  }
+
+  constructor (game) {
+    super(game, 'scene house')
+    this._game = game
+    this._splashIsReady = false
+    this._starShaderTime = 0
+    this._starSpeed = 0.01
+
+    this.GUI_BEGIN_ALPHA_CHANGE_TIME = 500
+    this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME = 1000
+    this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME = 200
+  }
+
+  initOverride () {
+    const [{game}, {scene}] = [this, this.game]
+    this.guis = {}
+
+    this.guis.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('Begin-Scene-GUI', true, scene)
+    this.guis.advancedTexture.renderAtIdealSize = false
+
+    // #region 初始化标签
+    this.guis.textCompany = new TextBlock()
+    this.guis.textCompany.fontFamily = 'Microsoft YaHei'
+    this.guis.textCompany.fontSize = '32px'
+    this.guis.textCompany.color = 'white'
+    this.guis.textCompany.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textCompany.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textCompany.resizeToFit = true
+    this.guis.textCompany.text = 'Parity Ltd. Present'
+    this.guis.textCompany.alpha = 0
+
+    this.guis.textBestOf = new TextBlock()
+    this.guis.textBestOf.fontFamily = 'Microsoft YaHei'
+    this.guis.textBestOf.resizeToFit = true
+    this.guis.textBestOf.text = 'BEST OF 2018-2020'
+    this.guis.textBestOf.fontSize = '14px'
+    this.guis.textBestOf.color = 'white'
+    this.guis.textBestOf.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textBestOf.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textBestOf.alpha = 0
+
+    this.guis.textPowerBy = new TextBlock()
+    this.guis.textPowerBy.fontFamily = 'Microsoft YaHei'
+    this.guis.textPowerBy.resizeToFit = true
+    this.guis.textPowerBy.text = 'POWER BY BABYLON JS'
+    this.guis.textPowerBy.fontSize = '16px'
+    this.guis.textPowerBy.color = 'white'
+    this.guis.textPowerBy.scaleY = 0.5
+    this.guis.textPowerBy.scaleX = 0.5
+    this.guis.textPowerBy.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+    this.guis.textPowerBy.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP
+    this.guis.textPowerBy.alpha = 0
+
+    this.guis.advancedTexture.addControl(this.guis.textCompany)
+    this.guis.advancedTexture.addControl(this.guis.textBestOf)
+    this.guis.advancedTexture.addControl(this.guis.textPowerBy)
+    // #endregion
+
+    // 初始化渲染管线
+    game.pipeline.samples = 1 // 多采样抗锯齿 1~4 默认：1
+    game.pipeline.fxaaEnabled = false // 快速抗锯齿，默认：false
+    game.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
+    game.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
+    game.pipeline.imageProcessing.exposure = 1 // Camera exposure, range 1-4, default 1
+    game.pipeline.bloomEnabled = false // Bloom, default false
+
+    // 星空材质
+    this.starMaterial = new ShaderMaterial('star-material',
+      scene, { vertex: 'star', fragment: 'star' }, { attributes: ['position', 'uv'],
+        uniforms: ['time', 'world', 'worldView', 'worldViewProjection', 'view', 'projection']
+      })
+
+    this.starMaterial.setTexture('textureSampler', new Texture('./static/assets/images/star.png', scene))
+  }
+
+  initOutlineOverride () {
+    this.outline.set('splash',
+      new SceneObject(this.game, 'house',
+        new SceneObjectAssets('./static/assets/resources/', 'LoadingUI.babylon', 'plane', [])))
+  }
+
+  run () {
+    setTimeout(() => { // GUI 初始化延时，如果为 0 或直接运行可能造成定位不准确。
+      this.__guiTextRemoveCenter() // 移动所有的 GUI 到屏幕中心
+      let opacity = 0
+      let opacityTimer = setInterval(() => {
+        opacity += GUI_BEGIN_FADE_IN_OPACITY_STEP
+
+        this.guis.textCompany.alpha = opacity
+        this.guis.textBestOf.alpha = opacity
+        this.guis.textPowerBy.alpha = opacity
+
+        if (opacity >= 1) { // 如果透明度为1，入场结束
+          // 等待一定时间后显示飞溅网格 GUI_BEGIN_WATTING_TIME
+          setTimeout(() => this.__splashMeshShow(), GUI_BEGIN_WATTING_TIME)
+          window.clearInterval(opacityTimer) // 清理时钟
+        }
+      }, 1000 / FPS)
+    }, 50)
+  }
+
+  // custom method
+  /**
+   * GUI 移动至屏幕中心
+   *
+   * @memberof SceneLoading
+   */
+  __guiTextRemoveCenter () {
+    const [{canvas}, {textCompany, textBestOf, textPowerBy}] = [this.game, this.guis]
+
+    textCompany.left = (canvas.width - textCompany._width.internalValue) / 2 + 'px'
+    textCompany.top = (canvas.height - textCompany._height.internalValue) / 2 + 'px'
+    textBestOf.left = (canvas.width - textBestOf._width.internalValue) / 2 + 'px'
+    textBestOf.top = textCompany._top.internalValue + textCompany._height.internalValue + 0 + 'px'
+    textPowerBy.left = (canvas.width - textPowerBy._width.internalValue) / 2 + 'px'
+    textPowerBy.top = textBestOf._top.internalValue + textBestOf._height.internalValue / 2 + 0 + 'px'
+  }
+  /**
+   * GUI 移动至屏幕右下角
+   *
+   * @memberof SceneLoading
+   */
+  __guiTextRemoveToScreenRB () {
+    const duration = this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME
+
+    const t0 = FPS * this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME / 1000
+    const t1 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME) / 1000
+    const t2 = FPS * (this.GUI_MOVE_TO_RIGHT_BOTTOM_TIME - this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2) / 1000
+
+    const w = this.game._canvas.width
+    const h = this.game._canvas.height
+
+    const ui = this.guis
+
+    const tb0 = {
+      x: ((w - ui.textCompany._width.internalValue) - ui.textCompany._left.internalValue) / t0,
+      y: ((h - ui.textCompany._height.internalValue) - ui.textCompany._top.internalValue) / t0
+    }
+    const tb1 = {
+      x: ((w - ui.textBestOf._width.internalValue) - ui.textBestOf._left.internalValue) / t1,
+      y: ((h - ui.textBestOf._height.internalValue - ui.textCompany._height.internalValue) - ui.textBestOf._top.internalValue) / t1
+    }
+    const tb2 = {
+      x: ((w - ui.textPowerBy._width.internalValue + ui.textPowerBy._width.internalValue / 4) - ui.textPowerBy._left.internalValue) / t2,
+      y: ((h - ui.textPowerBy._height.internalValue + ui.textPowerBy._height.internalValue / 4) - ui.textCompany._height.internalValue - ui.textBestOf._height.internalValue - ui.textPowerBy._top.internalValue) / t2
+    }
+
+    let timed = 0
+
+    let timer = setInterval(() => {
+      timed += 1000 / FPS
+
+      if (timed > 0 && timed < duration) ui.textCompany.left = ui.textCompany._left.internalValue + tb0.x + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.left = ui.textBestOf._left.internalValue + tb1.x + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.left = ui.textPowerBy._left.internalValue + tb2.x + 'px'
+
+      if (timed > 0 && timed < duration) ui.textCompany.top = ui.textCompany._top.internalValue + tb0.y + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME && timed < duration) ui.textBestOf.top = ui.textBestOf._top.internalValue + tb1.y + 'px'
+      if (timed > this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME * 2 && timed < duration) ui.textPowerBy.top = ui.textPowerBy._top.internalValue + tb2.y + 'px'
+
+      timed >= duration && window.clearInterval(timer)
+    }, 1000 / FPS)
+  }
+  __splashMeshShow () {
+
   }
 }
 

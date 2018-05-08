@@ -5,10 +5,9 @@ import {SceneObject} from './index' // eslint-disable-line no-unused-vars
  *
  * @export
  * @class OutLine
- * @type {Map<string, SceneObject>}
  * @extends {Map<string, SceneObject>}
  */
-export default class OutLine extends Map {
+export default class Outline extends Map {
   /**
    * 获取大纲内资源是否已经全部加载
    *
@@ -16,9 +15,9 @@ export default class OutLine extends Map {
    * @readonly
    * @memberof OutLine
    */
-  get allLoaded () {
+  get allIsLoaded () {
     for (let obj of this.values()) {
-      if (!obj.assetsLoaded) return false
+      if (!obj.assetsIsLoaded) return false
     }
     return true
   }

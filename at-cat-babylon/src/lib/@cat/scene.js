@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import {Game, SceneObject, Outline} from './index' // eslint-disable-line
+import {Game, SceneObject, Outline} from './index'
 
 /**
  * 场景
@@ -26,12 +26,18 @@ class Scene {
   /**
    * 大纲
    *
-   * @type {OutLine<string, SceneObject>}
+   * @type {Outline}
    * @memberof Scene
    */
   get outline () { return this._outline }
   set outline (val) { return this._outline }
 
+  /**
+   * 构造函数
+   * @param {Game} game 游戏
+   * @param {string} name 场景名称
+   * @memberof Scene
+   */
   constructor (game, name) {
     this._game = game
     this._name = name
@@ -78,14 +84,17 @@ class Scene {
    * 异步加载场景大纲内所有资源
    * @memberof Scene
    */
-  async load () {
+  async loadAssetsAsync (onProgress) {
     const [{outline}] = [this]
+    let percents = new Map() // 进度百分比
 
-    for (let obj of outline.values()) {
-      await obj.loadAssetsAsync(false, ({lengthComputable: c, loaded: l, total: t}) => {
-      }).then(house => {
-        console.log(outline.allLoaded)
-      })
+    for (let [name, obj] of outline) {
+      await obj.loadAssetsAsync(false, ({lengthComputable: c, loaded: l, total: t, percent: p}) => {
+        percents.set(name, p)
+        let percent = 0
+        for (let _p of percents.values()) percent += _p
+        onProgress((percent / outline.size).toFixed(2))
+      }).then(root => {})
     }
   }
 }

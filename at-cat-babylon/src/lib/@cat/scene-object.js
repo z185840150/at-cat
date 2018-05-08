@@ -1,5 +1,6 @@
 import BABYLON from 'babylonjs'
-import Game from './game' // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+import {Game, SceneObjectAssets, SceneObjectAssetsLoaderProgressEvent} from './index'
 
 const [{ImportMeshAsync: asyncImport}] = [BABYLON.SceneLoader]
 
@@ -65,13 +66,12 @@ export default class SceneObject {
     }
   }
   /**
-   * 资源已经被加载
+   * 标记资源已经被加载
    *
    * @type {boolean}
    * @memberof SceneObject
    */
   get assetsIsLoaded () { return this._assetsIsLoaded }
-  set assetsIsLoaded (val) { this._assetsIsLoaded = val }
 
   /**
    * 构造函数
@@ -92,24 +92,38 @@ export default class SceneObject {
   /**
    * 异步加载资源进度函数
    *
-   * @typedef {function(BABYLON.SceneLoaderProgressEvent)} loadAssetsCallback
+   * @typedef {function(SceneObjectAssetsLoaderProgressEvent)} loadAssetsCallback
    * @callback loadAssetsCallback
-   * @param {BABYLON.SceneLoaderProgressEvent} 进度事件
+   * @param {SceneObjectAssetsLoaderProgressEvent} 进度事件
    */
   /**
    * 异步加载资源
    * @param {boolean} [justChilds=false] 仅加载子节点包含的名称，默认 false
    * @param {loadAssetsCallback} onProgress 进度函数
+   * @param {boolean} [hidden=false] 加载完毕自动隐藏，默认 true
    */
-  async loadAssetsAsync (justChilds = false, onProgress = e => {}) {
+  async loadAssetsAsync (justChilds = false, onProgress = e => {}, hidden = true) {
     const [{scene}, {path, file, root, childs}] = [this.game, this.assets]
-    await asyncImport(justChilds ? childs : '', path, file, scene, onProgress)
+    this._assetsIsLoaded = false
+    // 清理资源
+    this.root && this.root.dispose()
+    this._root = null
+    this._childs = new Map()
+    // 加载资源
+    await asyncImport(justChilds ? childs : '', path, file, scene,
+      ({loaded: l, total: t, lengthComputable: c}) => {
+        onProgress(new SceneObjectAssetsLoaderProgressEvent(c, l, t))
+      })
       .then(({meshes: ms}) => {
         ms.map(m => {
+          m.visibility = 0
           if (root === m.name) this.root = m
           else if (childs.includes(m.name)) this.childs.set(m.name, m)
+          m.visibility = hidden ? 0 : 1
         })
+        this._assetsIsLoaded = true
       })
+
     return this
   }
 }
