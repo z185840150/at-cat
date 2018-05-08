@@ -101,7 +101,7 @@ class SceneHouse extends Scene {
           if (house.__meshes.names.includes(n) && house.__meshes.ex.test(n)) {
             house.meshs[n] = m
           } else {
-            console.log(house.__meshes.names.includes(n))
+            console.log(house.__meshes.names.includes(n) && house.__meshes.ex.test(n))
           }
           // console.log(house._meshs.ex.test(n) && house._meshs.names.includes(n), n, m)
         })
