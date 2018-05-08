@@ -3,7 +3,7 @@ import CatMaker from './../lib/cat-maker'
 import TargetMaker from './../lib/cat-maker/src/target-maker'
 import Gene from './../lib/cat-gene'
 
-import Scene from './Scene'
+import {Scene, SceneObject, SceneObjectAssets} from './Scene'
 
 const MAKE_TARGET = false
 const MESH_NAMES = [
@@ -14,9 +14,6 @@ const MESH_NAMES = [
 ]
 
 class SceneHouse extends Scene {
-  get houses () { return this._houses }
-  set houses (value) { this._houses = value }
-
   constructor (...args) {
     super(...args)
     this.name = 'scene house'
@@ -63,52 +60,38 @@ class SceneHouse extends Scene {
     this.loadSkyBox()
 
       .then(() => {
-        const scene = this.game.scene
-
         BABYLON.SceneLoader.ImportMeshAsync(MESH_NAMES,
           './static/assets/resources/cat/babylon/',
-          'cat-target.babylon', scene).then(({meshes, skeletons}) => {
-            new TargetMaker(scene.getMeshByName('cat_body'), scene.getMeshByName(name)).build()
-          })
+          'cat-target.babylon', this.game.scene).then(({meshes, skeletons}) => {
+          new TargetMaker(this.game.scene.getMeshByName('cat_body'), this.game.scene.getMeshByName(name)).build()
+        })
       })
   }
 
   async load () {
-    const [{scene}] = [this.game]
+    const [{scene}, {ImportMeshAsync: asyncImport}] = [this.game, BABYLON.SceneLoader]
 
     let house = {
-      _root: { ex: /__root__/ },
+      __path: './static/assets/resources/house/',
+      __root: { ex: /__root__/ },
       __meshes: {
         names: ['house_mesh', 'house_pillar_mesh', 'house_planks_mesh', 'house_frame_mesh', 'house_carpet_mesh', 'house_bowl_water_mesh',
           'house_floor_mesh', 'house_board_mesh', 'house_bowl_food_mesh'],
-        ex: /_mesh$/g
-      },
-      root: null,
-      meshs: {
-
-      }
+        ex: /_mesh$/g },
+      /** @type {BABYLON.Mesh} */ root: null,
+      /** @type {Map<string, BABYLON.Mesh>} */ meshes: new Map()
     }
-    const {ImportMeshAsync: I} = BABYLON.SceneLoader
-    await I('', './static/assets/resources/house/', 'house.gltf', scene,
+
+    await asyncImport('', house.__path, 'house.gltf', scene,
       ({lengthComputable: c, loaded: l, total: t}) => {
 
-      }).then(({meshes: ms}) => {
+      })
+      .then(({meshes: ms}) => {
         ms.map(m => {
-          let { name: n } = m
-
-          if (house._root.ex.test(n)) house.root = m
-
-          if (house.__meshes.names.includes(n) && house.__meshes.ex.test(n)) {
-            house.meshs[n] = m
-          } else {
-            console.log(house.__meshes.names.includes(n) && house.__meshes.ex.test(n))
-          }
-          // console.log(house._meshs.ex.test(n) && house._meshs.names.includes(n), n, m)
+          if (house.__root.ex.test(m.name)) house.root = m
+          else if (house.__meshes.names.includes(m.name)) house.meshes.set(m.name, m)
+          m.visibility = 0
         })
-        console.log(Object.keys(house.meshs))
-        setTimeout(() => {
-          console.log(Object.keys(house.meshs))
-        }, 1000)
       })
   }
 
