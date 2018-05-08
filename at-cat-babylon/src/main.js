@@ -59,105 +59,20 @@
  */
 
 import * as BABYLON from 'babylonjs'
-
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import './lib/fur-material'
 import './lib/star-material'
 
-import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
+
+import {Game} from './lib/@cat/index'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
 const DEBUG = true // 控制是否游戏中渲染Debug层
 
-export default class Game {
-  // #region 属性
-  /** Canvas DOM 元素
-   * @type {HTMLCanvasElement}
-   */
-  get canvas () { return this._canvas }
-  /** Babylon 引擎
-   * @type {BABYLON.Engine}
-   */
-  get engine () { return this._engine }
-  /** 主场景
-   * @type {BABYLON.Scene}
-   */
-  get scene () { return this._scene }
-  /** 主摄像机
-   * @type {BABYLON.Camera}
-   */
-  get camera () { return this._camera }
-  /** 天空盒
-   * @type {BABYLON.Mesh}
-   */
-  get skybox () { return this._skybox }
-  /** 主光源
-   * @type {BABYLON.Light}
-   */
-  get light () { return this._light }
-  /** 主阴影
-   * @type {BABYLON.ShadowGenerator}
-   */
-  get shadowGenerator () { return this._shadowGenerator }
-  /** 默认渲染管线
-   * @type {BABYLON.PostProcessRenderPipeline}
-   */
-  get pipeline () { return this._pipeline }
-  /** 资源管理器
-   * @type {BABYLON.AssetsManager}
-   */
-  get assetsManager () { return this._assetsManager }
-  /** 获取自身是否初始化
-   * @readonly
-   * @memberof Game
-   */
-  get initialized () {
-    return true &&
-    this._canvas &&
-    this._engine &&
-    this._scene &&
-    this._camera &&
-    this._skybox &&
-    this._light &&
-    this._shadowGenerator &&
-    this._pipeline &&
-    this._assetsManager
-  }
-
-  set canvas (val) { this._canvas = val }
-  set engine (val) { this._engine = val }
-  set scene (val) { this._scene = val }
-  set camera (val) { this._camera = val }
-  set skybox (val) { this._skybox = val }
-  set light (val) { this._light = val }
-  set shadowGenerator (val) { this._shadowGenerator = val }
-  set pipeline (val) { this._pipeline = val }
-  set assetsManager (val) { this._assetsManager = val }
-  // #endregion
-
-  /** 构造函数
-   * @param {HTMLCanvasElement} canvas - Canvas DOM 元素，默认为：document.getElementById('renderCanvas')
-   * @param {Boolean} init - 是否执行初始化，默认：true
-   * @memberof Game
-   */
-  constructor (canvas = document.getElementById('renderCanvas'), init = true) {
-    this.canvas = canvas
-  }
-
-  /** 初始化
-   * @returns {Game} 自身
-   */
-  init () {
-    // 初始化引擎
-    this.engine && this.engine.dispose()
-    this.engine = new BABYLON.Engine(this.canvas, true, null, false)
-
-    // 初始化场景
-    this.scene = new BABYLON.Scene(this.engine)
-    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
-
+class AtCatGame extends Game {
+  initOverride () {
     // 初始化渲染摄像机
     this.camera = new BABYLON.ArcRotateCamera('MAIN_CAMERA', 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), this.scene)
     this.camera.setPosition(new BABYLON.Vector3(0, 0, 10))
@@ -187,25 +102,13 @@ export default class Game {
 
     // 资源管理器
     this.assetsManager = new BABYLON.AssetsManager(this.scene)
-
-    // 尺寸变更事件
-    window.addEventListener('resize', () => this._engine.resize())
-
-    return this
   }
 
-  /** 开始游戏
-   * @memberof Game
-   */
-  start () {
-    if (!this.initialized) this.init() // 判断是否初始化
-    this.engine.runRenderLoop(() => this.scene.render()) // 引擎开始循环渲染
-    DEBUG && this.scene.debugLayer.show() // 是否渲染Debug层
-
+  startOverride () {
     // new SceneLoading(this).run()
     new Scenehouse(this).load() // 场景开始
   }
 }
 
-window.game = new Game() // 全局注册游戏
-window.addEventListener('DOMContentLoaded', () => { window.game.start() })
+window.game = new AtCatGame() // 全局注册游戏
+window.addEventListener('DOMContentLoaded', () => { window.game.start(DEBUG) })

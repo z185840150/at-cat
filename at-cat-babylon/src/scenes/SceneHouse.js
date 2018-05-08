@@ -3,7 +3,7 @@ import CatMaker from './../lib/cat-maker'
 import TargetMaker from './../lib/cat-maker/src/target-maker'
 import Gene from './../lib/cat-gene'
 
-import {Scene, SceneObject, SceneObjectAssets} from './Scene'
+import {Scene, SceneObject, SceneObjectAssets} from './../lib/@cat/index'
 
 const MAKE_TARGET = false
 const MESH_NAMES = [
@@ -14,18 +14,11 @@ const MESH_NAMES = [
 ]
 
 class SceneHouse extends Scene {
-  constructor (...args) {
-    super(...args)
-    this.name = 'scene house'
-
-    this._houses = {
-      assetsState: 'null',
-      meshs: []
-    }
-    this.DEBUG = true
+  constructor (game) {
+    super(game, 'scene house')
   }
 
-  init () {
+  initOverride () {
     const game = this.game
     // 初始化场景
     game.scene.ambientColor = new BABYLON.Color3(1, 1, 1)
@@ -54,6 +47,20 @@ class SceneHouse extends Scene {
     game.shadowGenerator.forceBackFacesOnly = true
     game.shadowGenerator.useKernelBlur = true
     game.shadowGenerator.blurKernel = 32
+
+    game.skybox && game.skybox.dispose()
+    game.skybox = null
+    game.skybox = game.scene.createDefaultSkybox(BABYLON.CubeTexture
+      .CreateFromPrefilteredData('./static/assets/resources/hdri/skybox.dds', game.scene), true, 1000, 0, true)
+    game.skybox.name = 'skybox default'
+  }
+
+  initOutlineOverride () {
+    this.outline.set('house', new SceneObject(this.game, 'house', new SceneObjectAssets(
+      './static/assets/resources/house/', 'house.gltf', '__root__',
+      [ 'house_mesh', 'house_pillar_mesh', 'house_planks_mesh', 'house_frame_mesh',
+        'house_carpet_mesh', 'house_bowl_water_mesh', 'house_floor_mesh',
+        'house_board_mesh', 'house_bowl_food_mesh' ])))
   }
 
   computeTarget (name) {
@@ -64,33 +71,6 @@ class SceneHouse extends Scene {
           './static/assets/resources/cat/babylon/',
           'cat-target.babylon', this.game.scene).then(({meshes, skeletons}) => {
           new TargetMaker(this.game.scene.getMeshByName('cat_body'), this.game.scene.getMeshByName(name)).build()
-        })
-      })
-  }
-
-  async load () {
-    const [{scene}, {ImportMeshAsync: asyncImport}] = [this.game, BABYLON.SceneLoader]
-
-    let house = {
-      __path: './static/assets/resources/house/',
-      __root: { ex: /__root__/ },
-      __meshes: {
-        names: ['house_mesh', 'house_pillar_mesh', 'house_planks_mesh', 'house_frame_mesh', 'house_carpet_mesh', 'house_bowl_water_mesh',
-          'house_floor_mesh', 'house_board_mesh', 'house_bowl_food_mesh'],
-        ex: /_mesh$/g },
-      /** @type {BABYLON.Mesh} */ root: null,
-      /** @type {Map<string, BABYLON.Mesh>} */ meshes: new Map()
-    }
-
-    await asyncImport('', house.__path, 'house.gltf', scene,
-      ({lengthComputable: c, loaded: l, total: t}) => {
-
-      })
-      .then(({meshes: ms}) => {
-        ms.map(m => {
-          if (house.__root.ex.test(m.name)) house.root = m
-          else if (house.__meshes.names.includes(m.name)) house.meshes.set(m.name, m)
-          m.visibility = 0
         })
       })
   }
@@ -309,24 +289,6 @@ class SceneHouse extends Scene {
       })
       .then(() => { this.DEBUG && this.debug() })
       */
-  }
-
-  async loadSkyBox () {
-    const game = this.game
-    const scene = game.scene
-    const path = './static/assets/resources/hdri/skybox.dds'
-
-    game.skybox && game.skybox.dispose()
-    game.skybox = null
-    game.skybox = scene.createDefaultSkybox(BABYLON.CubeTexture.CreateFromPrefilteredData(path, scene), true, 1000, 0, true)
-    game.skybox.name = 'skybox default'
-
-    return game.skybox
-  }
-
-  loadHouseMesh () {
-    return BABYLON.SceneLoader
-      .AppendAsync('./static/assets/resources/house/', 'house.gltf', this.game.scene)
   }
 
   debug () {

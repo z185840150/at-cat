@@ -26,11 +26,7 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')],
-        query: {
-          presets: ['es2015', 'stage-0'],
-          plugins: ['transform-decorators-legacy', 'transform-class-properties']
-        }
+        include: [resolve('src'), resolve('node_modules/webpack-dev-server/client')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
