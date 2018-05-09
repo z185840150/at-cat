@@ -96,6 +96,7 @@ class Scene {
         onProgress((percent / outline.size).toFixed(2))
       }).then(root => {})
     }
+    return this
   }
 }
 

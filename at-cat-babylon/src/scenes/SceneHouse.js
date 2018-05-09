@@ -3,7 +3,7 @@ import CatMaker from './../lib/cat-maker'
 import TargetMaker from './../lib/cat-maker/src/target-maker'
 import Gene from './../lib/cat-gene'
 
-import {Scene, SceneObject, SceneObjectAssets} from './../lib/@cat/index'
+import {Scene, SceneObject, SceneObjectAssets, Outline} from './../lib/@cat/index' // eslint-disable-line
 
 const MAKE_TARGET = false
 const MESH_NAMES = [
@@ -63,59 +63,40 @@ class SceneHouse extends Scene {
         'house_board_mesh', 'house_bowl_food_mesh' ])))
   }
 
-  computeTarget (name) {
-    this.loadSkyBox()
-      .then(() => {
-        BABYLON.SceneLoader.ImportMeshAsync(MESH_NAMES,
-          './static/assets/resources/cat/babylon/',
-          'cat-target.babylon', this.game.scene).then(({meshes, skeletons}) => {
-          new TargetMaker(this.game.scene.getMeshByName('cat_body'), this.game.scene.getMeshByName(name)).build()
-        })
-      })
-  }
-
   run () {
     if (MAKE_TARGET) return this.computeTarget('body-fat-min')
 
     const game = this.game
     const scene = game.scene
 
-    this.loadSkyBox()
-      .then(() => this.loadHouseMesh())
-      .then(() => {
-        scene.shadowsEnabled = true
+    game.skybox && game.skybox.dispose()
+    game.skybox = null
+    game.skybox = scene.createDefaultSkybox(BABYLON.CubeTexture.CreateFromPrefilteredData('./static/assets/resources/hdri/skybox.dds', scene), true, 1000, 0, true)
+    game.skybox.name = 'skybox default'
 
-        this.game.light.shadowMinZ = 10
-        this.game.light.shadowMaxZ = 70
+    game.camera.position = new BABYLON.Vector3.Zero()
 
-        // 'pillar,planks,frame,carpet,bowl_water,floor,board,bowl_food'.split(',').map((n, i) => {
-        //   let mesh = scene.getMeshByName(`house_${n}_mesh`)
-        //   mesh.receiveShadows = true
-        //   this.game.shadowGenerator.getShadowMap().renderList.push(mesh)
-        // })
+    scene.shadowsEnabled = true
 
-        new CatMaker(game).loadAssets(maker => {
-          let gene = new Gene()
-          gene.fatRate = 0.5
+    this.game.light.shadowMinZ = 10
+    this.game.light.shadowMaxZ = 70
 
-          gene.headAngle = 0.5
-          maker.create('0', gene).then(({maker, mesh}) => {
-            mesh.position = new BABYLON.Vector3(5, -18, 18)
-            mesh.scaling = new BABYLON.Vector3(0.6, 0.6, 0.6)
-            scene.beginWeightedAnimation(mesh.skeleton, 20, 150, 1, true, 1)
-            // let fatLerp = -0.1
-          // setInterval(() => {
-          //   if (gene.fatRate <= 0) fatLerp = 0.001
-          //   if (gene.fatRate >= 1) fatLerp = -0.001
+    this.outline.forEach((obj, key) => {
+      obj.display = true
+    })
+    this.outline.get('house').root.position = new BABYLON.Vector3(0, 5, -90)
+    this.game.cat.meshs['body'].position = new BABYLON.Vector3(0, 0, 0)
+    this.game.cat.meshs['body'].visibility = 1
+    this.game.scene.beginWeightedAnimation(this.game.cat.meshs['body'].skeleton, 20, 150, 1, true, 1)
+    this.game.cat.meshs['body'].scaling = new BABYLON.Vector3(0.8, 0.8, 0.8)
+    this.game.cat.meshs['body'].position = new BABYLON.Vector3(8, -5.1, -120)
 
-          //   gene.fatRate += fatLerp
+    this.game.scene.getMeshByName('star-plane').dispose()
 
-          //   maker.genes['0'] = gene
-          //   maker.rebuild('0')
-          // }, 1000 / 60)
-          })
-        })
-      })
+    this.game.camera.dispose()
+    this.game.camera = new BABYLON.FreeCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.game.scene)
+    this.game.camera.setTarget(BABYLON.Vector3.Zero())
+    this.game.camera.attachControl(this.game.canvas, true)
 
     // let tasks = {}
     // let targets = {}

@@ -12,31 +12,37 @@ const TARGET_NAMES = (
 
 class CatMaker {
   /** 游戏
+   *
    * @type {Game}
    */
   get game () { return this._game }
   set game (val) { this._game = val }
   /** 基因
+   *
    * @type {Gene}
    */
   get genes () { return this._genes }
   set genes (val) { this._genes = val }
   /** 全部目标文件
+   *
    * @type {Object}
    */
   get targets () { return this._targets }
   set targets (val) { this._targets = val }
   /** 全部已生成猫的模型
+   *
    * @type {BABYLON.Mesh[]}
    */
   get meshes () { return this._meshes }
   set meshs (val) { this._meshs = val }
   /** 基本模型
+   *
    * @type {BABYLON.Mesh}
    */
   get base () { return this._base }
   set base (val) { this._base = val }
   /** 基本模型Position数据
+   *
    * @type {Number[]}
    */
   get basePosition () { return this._basePosition }

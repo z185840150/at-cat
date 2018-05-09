@@ -4,6 +4,10 @@ import SceneObject from './scene-object'
 import SceneObjectAssets from './scene-object-assets'
 import SceneObjectAssetsLoaderProgressEvent from './scene-object-assets-loader-progress-event'
 import Outline from './outline'
+import CatMaker from './cat-maker'
+import CatBreeds from './cat-breeds'
+import CatGene from './cat-gene'
+import CatMesh from './cat-mesh'
 
 export {
   Game,
@@ -11,5 +15,9 @@ export {
   SceneObject,
   SceneObjectAssets,
   SceneObjectAssetsLoaderProgressEvent,
-  Outline
+  Outline,
+  CatMaker,
+  CatBreeds,
+  CatGene,
+  CatMesh
 }

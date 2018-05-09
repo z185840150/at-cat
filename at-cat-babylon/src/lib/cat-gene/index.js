@@ -89,14 +89,14 @@ export default class Gene {
   /** 头部缩放深度 @type {Number} */ get headScaleDepth () { return this._headScaleDepth }
   /** 头部水平缩放 @type {Number} */ get headScaleHorizontally () { return this._headScaleHorizontally }
   /** 头部垂直缩放 @type {Number} */ get headScaleVertically () { return this._headScaleVertically }
-  /** 头部水平位移 @type {Number} */ get headMoveHorizontally () { return this._headMoveHorizontally }
-  /** 头部垂直位移 @type {Number} */ get headMoveVertically () { return this._headMoveVertically }
-  /** 头部深度位移 @type {Number} */ get headMoveDepth () { return this._headMoveDepth }
+  /** 头部水平位移 * @type {Number} */ get headMoveHorizontally () { return this._headMoveHorizontally }
+  /** 头部垂直位移 * @type {Number} */ get headMoveVertically () { return this._headMoveVertically }
+  /** 头部深度位移 * @type {Number} */ get headMoveDepth () { return this._headMoveDepth }
 
   // 额头形态
   /** 额头凸起 @type {Number} */ get foreheadBulge () { return this._foreheadBulge }
   /** 额头垂直缩放 @type {Number} */ get foreheadScaleVertically () { return this._foreheadScaleVertically }
-  /** 额头颅骨凸起 @type {Number} */ get foreheadCranicShape () { return this._foreheadCranicShape }
+  /** 额头颅骨凸起 * @type {Number} */ get foreheadCranicShape () { return this._foreheadCranicShape }
   /** 额头太阳穴凸起 @type {Number} */ get foreheadTempleBulge () { return this._foreheadTempleBulge }
 
   // 眉骨
@@ -109,10 +109,10 @@ export default class Gene {
   /** 颈部深度缩放 @type {Number} */ get neckScaleDepth () { return this._neckScaleDepth }
   /** 后颈深度缩放 @type {Number} */ get neckScaleDepthOfNape () { return this._neckScaleDepthOfNape }
   /** 颈部水平缩放 @type {Number} */ get neckScaleHorizontally () { return this._neckScaleHorizontally }
-  /** 颈部垂直缩放 @type {Number} */ get neckScaleVertically () { return this._neckScaleVertically }
-  /** 颈部深度位移 @type {Number} */ get neckMoveDepth () { return this._neckMoveDepth }
-  /** 颈部水平位移 @type {Number} */ get neckMoveHorizontally () { return this._neckMoveHorizontally }
-  /** 颈部垂直位移 @type {Number} */ get neckMoveVertically () { return this._neckMoveVertically }
+  /** 颈部垂直缩放 * @type {Number} */ get neckScaleVertically () { return this._neckScaleVertically }
+  /** 颈部深度位移 * @type {Number} */ get neckMoveDepth () { return this._neckMoveDepth }
+  /** 颈部水平位移 * @type {Number} */ get neckMoveHorizontally () { return this._neckMoveHorizontally }
+  /** 颈部垂直位移 * @type {Number} */ get neckMoveVertically () { return this._neckMoveVertically }
 
   // 眼睛
   /** 左眼颜色 @type {Number[]} */ get eyeColorLeft () { return this._eyeColorLeft }
@@ -132,8 +132,8 @@ export default class Gene {
   /** 内眼角水平位移 @type {Number} */ get eyeMoveInnerCornerHorizontally () { return this._eyeMoveInnerCornerHorizontally }
   /** 眼角垂直位移 @type {Number} */ get eyeMoveOuterCornerVertically () { return this._eyeMoveOuterCornerVertically }
   /** 内眼角垂直位移 @type {Number} */ get eyeMoveInnerCornerVertically () { return this._eyeMoveInnerCornerVertically }
-  /** 眼睛水平移动 @type {Number} */ get eyeMoveHorizontally () { return this._eyeMoveHorizontally }
-  /** 眼睛垂直移动 @type {Number} */ get eyeMoveVertically () { return this._eyeMoveVertically }
+  /** 眼睛水平移动 * @type {Number} */ get eyeMoveHorizontally () { return this._eyeMoveHorizontally }
+  /** 眼睛垂直移动 * @type {Number} */ get eyeMoveVertically () { return this._eyeMoveVertically }
   /** 眼睛缩放 @type {Number} */ get eyeScale () { return this._eyeScale }
 
   // 乳房形态 仅限母猫(sex < 0.5)

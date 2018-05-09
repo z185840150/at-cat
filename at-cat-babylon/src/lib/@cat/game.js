@@ -1,3 +1,5 @@
+import BABYLON from 'babylonjs'
+import {CatMaker, CatMesh} from './index' // eslint-disable-line
 /**
  * 游戏类
  *
@@ -7,60 +9,70 @@
 export default class Game {
   /**
    * Canvas DOM 元素
+   *
    * @type {HTMLCanvasElement}
    * @memberof Game
    */
   get canvas () { return this._canvas }
   /**
    * Babylon 引擎
+   *
    * @type {BABYLON.Engine}
    * @memberof Game
    */
   get engine () { return this._engine }
   /**
    * 主场景
+   *
    * @type {BABYLON.Scene}
    * @memberof Game
    */
   get scene () { return this._scene }
   /**
    * 主摄像机
+   *
    * @type {BABYLON.Camera}
    * @memberof Game
    */
   get camera () { return this._camera }
   /**
    * 天空盒
+   *
    * @type {BABYLON.Mesh}
    * @memberof Game
    */
   get skybox () { return this._skybox }
   /**
    * 主光源
+   *
    * @type {BABYLON.Light}
    * @memberof Game
    */
   get light () { return this._light }
   /**
    * 主阴影
+   *
    * @type {BABYLON.ShadowGenerator}
    * @memberof Game
    */
   get shadowGenerator () { return this._shadowGenerator }
   /**
    * 默认渲染管线
+   *
    * @type {BABYLON.PostProcessRenderPipeline}
    * @memberof Game
    */
   get pipeline () { return this._pipeline }
   /**
    * 资源管理器
+   *
    * @type {BABYLON.AssetsManager}
    * @memberof Game
    */
   get assetsManager () { return this._assetsManager }
   /**
    * 获取自身是否初始化
+   *
    * @type {Boolean}
    * @readonly
    * @memberof Game
@@ -77,6 +89,21 @@ export default class Game {
     this._pipeline &&
     this._assetsManager
   }
+  /**
+   * 猫生成器
+   *
+   * @type {CatMaker}
+   * @memberof Game
+   */
+  get catMaker () { return this._catMaker }
+  /**
+   * 所有的猫
+   *
+   * @type {CatMesh}
+   *
+   * @memberof Game
+   */
+  get cat () { return this._cat }
 
   set canvas (val) { this._canvas = val }
   set engine (val) { this._engine = val }
@@ -87,6 +114,8 @@ export default class Game {
   set shadowGenerator (val) { this._shadowGenerator = val }
   set pipeline (val) { this._pipeline = val }
   set assetsManager (val) { this._assetsManager = val }
+  set catMaker (val) { this._catMaker = val }
+  set cat (val) { this._cat = val }
 
   /**
    * 构造函数
@@ -101,6 +130,7 @@ export default class Game {
 
   /**
    * 初始化
+   *
    * @returns {Game} 自身
    * @memberof Game
    */
@@ -111,6 +141,12 @@ export default class Game {
     // 初始化场景
     this.scene = new BABYLON.Scene(this.engine)
     this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
+    // 资源管理器
+    this.assetsManager = new BABYLON.AssetsManager(this.scene)
+    // 初始化猫生成器
+    this.catMaker = new CatMaker(this)
+    // 初始化所有猫
+    this.cat = new CatMesh(this)
     this.initOverride()
     // 尺寸变更事件
     window.addEventListener('resize', () => this.engine.resize())

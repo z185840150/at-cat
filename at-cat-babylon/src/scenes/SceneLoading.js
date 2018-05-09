@@ -381,10 +381,15 @@ class SceneLoading extends Scene {
    */
   __guiTextLoadingProgressShow () {
     this._loadingText = new LoadingProgressText(this.game)
-    this._loadingText.show('连接宇宙网络')
-    setTimeout(() => {
-      this._loadingText.show('网格化居所')
-    }, 1000)
+  }
+  /**
+   * GUI 进度文本改变
+   *
+   * @param {string} text 文本内容
+   * @memberof SceneLoading
+   */
+  __guiTextLoadingProgressText (text) {
+    this._loadingText.show(text)
   }
   /**
    * 显示飞溅网格并播放动画
@@ -421,7 +426,7 @@ class SceneLoading extends Scene {
     this.sound = new BABYLON.Sound('loading-sound', './static/assets/sounds/loading.mp3', this.game.scene, null, {
       loop: true,
       autoplay: true,
-      volume: 1
+      volume: 0
     })
   }
   /**

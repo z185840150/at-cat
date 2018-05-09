@@ -67,10 +67,12 @@ import './lib/star-material'
 import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
-import {Game} from './lib/@cat/index'
+import TargetMaker from './lib/cat-maker/src/target-maker'
+
+import {Game, CatMaker, CatMesh, Gene, CatGene} from './lib/@cat/index'
 
 const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
-const DEBUG = false // 控制是否游戏中渲染Debug层
+const DEBUG = true // 控制是否游戏中渲染Debug层
 
 class AtCatGame extends Game {
   initOverride () {
@@ -100,26 +102,117 @@ class AtCatGame extends Game {
     this.pipeline.bloomWeight = 0.6 // Weight
     this.pipeline.bloomThreshold = 0.15 // Threshold
     this.pipeline.bloomScale = 0.45 // Scale
-
-    // 资源管理器
-    this.assetsManager = new BABYLON.AssetsManager(this.scene)
   }
 
   startOverride () {
-    const loading = new SceneLoading(this)
+    new SceneLoading(this)
+      .loadAssetsAsync(p => {})
+      .then(loading => {
+        loading.__loadHouseScene = () => {
+          loading.__guiTextLoadingProgressText('连接网络')
+          this.__connect2GetCatData()
+            .then(res => res.json())
+            .then(j => setTimeout(() => this.__decodeGene(loading, j, () => {
+              console.log(j)
+              setTimeout(() => {
+                loading.__guiTextLoadingProgressText('搭建环境结构')
+                const houseScene = new Scenehouse(this)
+                houseScene.loadAssetsAsync(p => {})
+                  .then(() => loading.__guiTextLoadingProgressText('获取基本形态'))
+                  .then(() => this.cat.loadAssetsAsync()) // Cat Mesh 获取资源
+                  .then(() => {
+                    loading.__guiTextLoadingProgressText('获取基因形态')
+                    this.catMaker.loadTargets(maker => {
+                    // 开始生成猫模型
 
-    loading.loadAssetsAsync(p => {
-      // console.log(p)
-    }).then(() => {
-      loading.run()
-    })
-    loading.__loadHouseScene = () => {
-      // 场景开始
-      new Scenehouse(this).loadAssetsAsync(p => {
-        // console.log(p)\
-        document.title = p
+                      loading.__guiTextLoadingProgressText('基因网格化')
+                      console.log('cat: ', this.cat)
+                      console.log('cat: ', this.cat.meshs, this.cat.genes)
+                      console.log('cat: ', this.cat.meshs['body'])
+                      // BABYLON.SceneLoader.ImportMeshAsync('cat_body',
+                      //   './static/assets/resources/cat/babylon/',
+                      //   'cat.babylon', this.scene)
+                      //   .then(({meshes, skeletons}) => {
+                      //     houseScene.run()
+                      //     this.scene.beginWeightedAnimation(skeletons[0], 20, 150, 1, true, 1)
+                      //   })
+                      this.catMaker.build(this.cat)
+                        .then(() => {
+                          this.cat.index = 0
+                          let hash = Object.keys(this.cat.postions)[this.cat.index]
+
+                          this.cat.meshs['body'].setVerticesData(BABYLON.VertexBuffer.PositionKind, this.cat.postions[hash])
+                          this.cat.meshs['body'].visibility = 1
+                          houseScene.run()
+                        })
+                    })
+                  })
+              }, 0)
+            }), 0))
+            .catch(() => {})
+        }
+        loading.run()
       })
-    }
+  }
+
+  /**
+   * 连接后端并获取猫的数据
+   *
+   * @returns
+   * @memberof AtCatGame
+   */
+  __connect2GetCatData () {
+    return fetch('http://127.0.0.1:8081/api/cat/myCat', {
+      headers: { 'content-type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify({ 'token': '094a2bc2-a214-46bc-9a8b-3b1b7dab4708' })
+    })
+  }
+
+  /**
+   * 解码基因JSON
+   *
+   * @param {SceneLoading} loading 读取场景
+   * @memberof AtCatGame
+   */
+  __decodeGene (loading, json, cb) {
+    loading.__guiTextLoadingProgressText('解码基因原型')
+    json.map(d => {
+      // this.cat.genes.set(d.catGene.hash, new CatGene(d.catGene.gene))
+      this.cat.genes[d.catGene.hash] = new CatGene(d.catGene.gene)
+      // this.cat.postions[d.catGene.hash] = [].concat(this.cat.basePosition)
+    })
+    cb()
+  }
+
+  /**
+   * 读取房屋场景资源
+   *
+   * @param {SceneLoading} loading 场景
+   * @memberof AtCatGame
+   */
+  _loadSceneHouseAssets (loading) {
+    loading.__guiTextLoadingProgressText('生成环境结构')
+  }
+
+  __loadCatTargetMaker () {
+    BABYLON.SceneLoader.ImportMeshAsync(
+      '', './static/assets/resources/cat/babylon/',
+      'cat-target.babylon', this.scene).then(({meshes, skeletons}) => {
+      // const names = []
+      this.camera.dispose()
+      this.camera = new BABYLON.FreeCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.scene)
+      this.camera.setTarget(BABYLON.Vector3.Zero())
+      this.camera.attachControl(this.canvas, true)
+      console.log(meshes[10].getVerticesData(BABYLON.VertexBuffer.PositionKind))
+      // meshes.map(({name}, i) => { if (!(['cat', 'cat_eye_left', 'cat_eye_right', 'cat_body'].includes(name))) names.push(name) })
+      // let str = ''
+      // names.map(name => {
+      //   str += `*${name}\n`
+      //   str += new TargetMaker(this.scene.getMeshByName('cat_body'), this.scene.getMeshByName(name)).build()
+      // })
+      // console.log(str)
+    })
   }
 }
 
