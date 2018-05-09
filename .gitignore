@@ -59,6 +59,6 @@ typings/
 
 # custom
 .vscode
-at-cat-babylon/static
+# at-cat-babylon/static
 at-cat-maya
 at-cat-substance
