@@ -52,8 +52,8 @@ class Scene {
    * @memberof Scene
    */
   init () {
-    this.initOutlineOverride()
-    this.initOverride()
+    this.initOutLine()
+    this.initAfter()
     return this
   }
 
@@ -62,7 +62,7 @@ class Scene {
    *
    * @memberof Scene
    */
-  initOutlineOverride () {
+  initOutLine () {
   }
 
   /**
@@ -70,7 +70,7 @@ class Scene {
    *
    * @memberof Scene
    */
-  initOverride () {
+  initAfter () {
   }
 
   /**

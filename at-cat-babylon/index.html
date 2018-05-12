@@ -42,13 +42,36 @@
       right: 0px;
       top: 0px;
     }
+
+    #exit {
+      position: absolute;
+      left: 20px;
+      bottom: 10px;
+      width: 100px;
+      height: 35px;
+      background: rgba(0, 0, 0, 0.25);
+      background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
+      border-radius: 5px;
+      z-index: 999;
+      text-align: center;
+      line-height: 35px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      color: rgba(0, 0, 0, 0.8)
+    }
   </style>
+  <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 </head>
 
 <body>
-  <canvas id="renderCanvas" touch-action="none"></canvas>
-  <script src="bundle.js"></script>
-  <script src="./src/at-cat-bundle.js"></script>
+  <canvas id="renderCanvas"></canvas>
+  <div id="exit" onclick="backToWX()">
+    返回
+  </div>
+  <script>
+    function backToWX() { // eslint-disable-line
+      wx.miniProgram.navigateBack() // eslint-disable-line
+    }
+  </script>
 </body>
 
 </html>

@@ -50,9 +50,11 @@ export default class Gene {
 
   set eyeColorLeft (val) { this._eyeColorLeft = val }
   set eyeColorRight (val) { this._eyeColorRight = val }
+
   set eyeBagVolume (val) { this._eyeBagVolume = val }
   set eyeBagDistorsion (val) { this._eyeBagDistorsion = val }
   set eyeBagHeight (val) { this._eyeBagHeight = val }
+
   set eyeFoldAngle (val) { this._eyeFoldAngle = val }
   set eyeFoldVolume (val) { this._eyeFoldVolume = val }
   set eyeEpicanthus (val) { this._eyeEpicanthus = val }

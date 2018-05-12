@@ -18,7 +18,7 @@ class SceneHouse extends Scene {
     super(game, 'scene house')
   }
 
-  initOverride () {
+  initAfter () {
     // const game = this.game
     // // 初始化场景
     // game.scene.ambientColor = new BABYLON.Color3(1, 1, 1)
@@ -55,7 +55,7 @@ class SceneHouse extends Scene {
     // game.skybox.name = 'skybox default'
   }
 
-  initOutlineOverride () {
+  initOutLine () {
     this.outline.set('house', new SceneObject(this.game, 'house', new SceneObjectAssets(
       './static/assets/resources/house/', 'house.gltf', '__root__',
       [ 'house_mesh', 'house_pillar_mesh', 'house_planks_mesh', 'house_frame_mesh',
@@ -78,26 +78,53 @@ class SceneHouse extends Scene {
 
     scene.shadowsEnabled = true
 
-    this.game.light.shadowMinZ = 10
-    this.game.light.shadowMaxZ = 70
+    // this.game.light.shadowMinZ = 10
+    // this.game.light.shadowMaxZ = 70
 
     this.outline.forEach((obj, key) => {
       obj.display = true
     })
     this.outline.get('house').root.position = new BABYLON.Vector3(0, 5, -90)
-    this.game.cat.meshs['body'].position = new BABYLON.Vector3(0, 0, 0)
-    this.game.cat.meshs['body'].visibility = 1
-    this.game.scene.beginWeightedAnimation(this.game.cat.meshs['body'].skeleton, 20, 150, 1, true, 1)
-    this.game.cat.meshs['body'].scaling = new BABYLON.Vector3(0.8, 0.8, 0.8)
-    this.game.cat.meshs['body'].position = new BABYLON.Vector3(8, -5.1, -120)
+    this.game.cat.meshs.cat.position = new BABYLON.Vector3(0, 0, 0)
+    this.game.cat.meshs.cat.visibility = 1
+    this.game.scene.beginWeightedAnimation(this.game.cat.meshs['cat_body'].skeleton, 20, 150, 1, true, 1)
+    this.game.cat.meshs.cat.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8)
+    this.game.cat.meshs.cat.position = new BABYLON.Vector3(8, -5.1, -120)
 
     this.game.scene.getMeshByName('star-plane').dispose()
+
+    window.DeviceOrientationEvent && window.addEventListener('deviceorientation', e => {
+      this.game.camera.setTarget(new BABYLON.Vector3(e.gamma / 90 * 1.5, e.beta / 180 * 1.5, 0))
+    }, true)
 
     this.game.camera.dispose()
     this.game.camera = new BABYLON.FreeCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.game.scene)
     this.game.camera.setTarget(BABYLON.Vector3.Zero())
     this.game.camera.attachControl(this.game.canvas, true)
+    this.game.camera.speed /= 2
+    this.game.camera.position = new BABYLON.Vector3(25.42340477183468, -10.578907490856313, -72.63163384247723)
 
+    // this.game.camera.dispose()
+    // this.game.camera = new BABYLON.DeviceOrientationCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.game.scene)
+    // this.game.camera.setTarget(BABYLON.Vector3.Zero())
+    // this.game.camera.angularSensibility = 10000000
+    // this.game.camera.moveSensibility = 10000000
+    // this.game.camera.attachControl(this.game.canvas, true)
+
+    this.game.pipeline = new BABYLON.DefaultRenderingPipeline('DEFAULT_PIPELINE', true, this.game.scene, [this.game.camera], true)
+
+    this.game.pipeline.samples = 1 // 多采样抗锯齿 1~4 默认：1
+    this.game.pipeline.fxaaEnabled = false // 快速抗锯齿，默认：false
+    this.game.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
+    this.game.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
+    this.game.pipeline.imageProcessing.exposure = 1 // Camera exposure, range 1-4, default 1
+    this.game.pipeline.bloomEnabled = true // Bloom, default false
+    this.game.pipeline.bloomKernel = 60 // Kernel, range 1-500, default 64
+    this.game.pipeline.bloomWeight = 0.5 // Weight
+    this.game.pipeline.bloomThreshold = 0.70 // Threshold
+    this.game.pipeline.bloomScale = 0.25 // Scale
+
+    console.log(this.game.shadowGenerator.getShadowMap())
     // let tasks = {}
     // let targets = {}
     // let names = ['body-fat-max']

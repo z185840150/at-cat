@@ -120,6 +120,8 @@ export default class SceneObject {
           if (root === m.name) this.root = m
           else if (childs.includes(m.name)) this.childs.set(m.name, m)
           m.visibility = hidden ? 0 : 1
+          m.receiveShadows = true // 接受阴影
+          this.game.shadowGenerator.getShadowMap().renderList.push(m)
         })
         this._assetsIsLoaded = true
       })

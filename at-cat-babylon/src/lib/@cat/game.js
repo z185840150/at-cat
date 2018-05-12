@@ -1,5 +1,7 @@
 import BABYLON from 'babylonjs'
-import {CatMaker, CatMesh} from './index' // eslint-disable-line
+
+import {CatMaker, CatMesh, User} from './index' // eslint-disable-line
+
 /**
  * 游戏类
  *
@@ -14,6 +16,7 @@ export default class Game {
    * @memberof Game
    */
   get canvas () { return this._canvas }
+  set canvas (val) { this._canvas = val }
   /**
    * Babylon 引擎
    *
@@ -21,6 +24,7 @@ export default class Game {
    * @memberof Game
    */
   get engine () { return this._engine }
+  set engine (val) { this._engine = val }
   /**
    * 主场景
    *
@@ -28,6 +32,7 @@ export default class Game {
    * @memberof Game
    */
   get scene () { return this._scene }
+  set scene (val) { this._scene = val }
   /**
    * 主摄像机
    *
@@ -35,6 +40,7 @@ export default class Game {
    * @memberof Game
    */
   get camera () { return this._camera }
+  set camera (val) { this._camera = val }
   /**
    * 天空盒
    *
@@ -42,6 +48,7 @@ export default class Game {
    * @memberof Game
    */
   get skybox () { return this._skybox }
+  set skybox (val) { this._skybox = val }
   /**
    * 主光源
    *
@@ -49,6 +56,7 @@ export default class Game {
    * @memberof Game
    */
   get light () { return this._light }
+  set light (val) { this._light = val }
   /**
    * 主阴影
    *
@@ -56,6 +64,7 @@ export default class Game {
    * @memberof Game
    */
   get shadowGenerator () { return this._shadowGenerator }
+  set shadowGenerator (val) { this._shadowGenerator = val }
   /**
    * 默认渲染管线
    *
@@ -63,6 +72,7 @@ export default class Game {
    * @memberof Game
    */
   get pipeline () { return this._pipeline }
+  set pipeline (val) { this._pipeline = val }
   /**
    * 资源管理器
    *
@@ -70,25 +80,7 @@ export default class Game {
    * @memberof Game
    */
   get assetsManager () { return this._assetsManager }
-  /**
-   * 获取自身是否初始化
-   *
-   * @type {Boolean}
-   * @readonly
-   * @memberof Game
-   */
-  get initialized () {
-    return true &&
-    this._canvas &&
-    this._engine &&
-    this._scene &&
-    this._camera &&
-    this._skybox &&
-    this._light &&
-    this._shadowGenerator &&
-    this._pipeline &&
-    this._assetsManager
-  }
+  set assetsManager (val) { this._assetsManager = val }
   /**
    * 猫生成器
    *
@@ -96,6 +88,7 @@ export default class Game {
    * @memberof Game
    */
   get catMaker () { return this._catMaker }
+  set catMaker (val) { this._catMaker = val }
   /**
    * 所有的猫
    *
@@ -104,79 +97,100 @@ export default class Game {
    * @memberof Game
    */
   get cat () { return this._cat }
-
-  set canvas (val) { this._canvas = val }
-  set engine (val) { this._engine = val }
-  set scene (val) { this._scene = val }
-  set camera (val) { this._camera = val }
-  set skybox (val) { this._skybox = val }
-  set light (val) { this._light = val }
-  set shadowGenerator (val) { this._shadowGenerator = val }
-  set pipeline (val) { this._pipeline = val }
-  set assetsManager (val) { this._assetsManager = val }
-  set catMaker (val) { this._catMaker = val }
   set cat (val) { this._cat = val }
+  /**
+   * 用户
+   *
+   * @type {User}
+   * @memberof Game
+   */
+  get user () { return this._user }
+  set user (val) { this._user = val }
 
   /**
    * 构造函数
    *
-   * @param {HTMLCanvasElement} [canvas=document.getElementById('renderCanvas')] - Canvas DOM 元素，默认为：document.getElementById('renderCanvas')
-   * @param {Boolean} init - 是否执行初始化，默认：true
+   * @param {HTMLCanvasElement} canvas - Canvas DOM 元素，默认为：null
    * @memberof Game
    */
-  constructor (canvas = document.getElementById('renderCanvas'), init = true) {
+  constructor (canvas) {
     this.canvas = canvas
+    this.init()
   }
 
   /**
    * 初始化
    *
    * @returns {Game} 自身
+   * @readonly
    * @memberof Game
    */
   init () {
+    this.initBefore()
     // 初始化引擎
-    this.engine && this.engine.dispose()
-    this.engine = new BABYLON.Engine(this.canvas, true, null, false)
+    this._engine = new BABYLON.Engine(this.canvas, true, null, false)
     // 初始化场景
-    this.scene = new BABYLON.Scene(this.engine)
-    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
+    this._scene = new BABYLON.Scene(this.engine)
+    this._scene.clearColor = new BABYLON.Color4(0, 0, 0, 1)
     // 资源管理器
-    this.assetsManager = new BABYLON.AssetsManager(this.scene)
-    // 初始化猫生成器
-    this.catMaker = new CatMaker(this)
-    // 初始化所有猫
-    this.cat = new CatMesh(this)
-    this.initOverride()
-    // 尺寸变更事件
+    this._assetsManager = new BABYLON.AssetsManager(this.scene)
+
+    // 注册浏览器尺寸变更事件
+    window.addEventListener &&
     window.addEventListener('resize', () => this.engine.resize())
+
+    this.initAfter()
     return this
   }
 
   /**
-   * 初始化函数复写
+   * 初始化 执行之前函数
    *
+   * @type {function}
    * @memberof Game
    */
-  initOverride () {} // Interface
+  initBefore () {}
+
+  /**
+   * 初始化 执行之后函数
+   *
+   * @type {function}
+   * @memberof Game
+   */
+  initAfter () {}
 
   /**
    * 开始游戏
    *
-   * @param {boolean} [debug=false] 开启Debug视图层。默认 false
+   * @type {function}
+   * @param {boolean} [debug=false] 是否开启Babylon JS Debug视图层，默认 false
+   * @readonly
    * @memberof Game
    */
   start (debug = false) {
-    if (!this.initialized) this.init() // 判断是否初始化
-    this.engine.runRenderLoop(() => this.scene.render()) // 引擎开始循环渲染
-    debug && this.scene.debugLayer.show() // 是否渲染Debug层
-    this.startOverride()
+    this.startBefore()
+
+    // 引擎开始循环渲染
+    this.engine.runRenderLoop(() => this.scene.render())
+    // 是否渲染Debug层
+    debug && this.scene.debugLayer.show()
+
+    this.startAfter()
   }
 
   /**
-   * 开始游戏函数复写
+   * 开始游戏 之前执行函数
    *
+   * @type {function}
    * @memberof Game
    */
-  startOverride () {} // Interface
+  startBefore () {} // Interface
+
+  /**
+   * 开始游戏 之后执行函数
+   *
+   * @type {function}
+   * @memberof Game
+   */
+  startAfter () {} // Interface
 }

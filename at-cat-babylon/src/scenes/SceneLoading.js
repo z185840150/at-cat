@@ -223,7 +223,7 @@ class SceneLoading extends Scene {
     this.GUI_MOVE_TO_RIGHT_BOTTOM_DELAY_TIME = 200
   }
 
-  initOverride () {
+  initAfter () {
     const [{game}, {scene}] = [this, this.game]
     this.guis = {}
 
@@ -285,9 +285,9 @@ class SceneLoading extends Scene {
     this.starMaterial.setTexture('textureSampler', new Texture('./static/assets/images/star.png', scene))
   }
 
-  initOutlineOverride () {
+  initOutLine () {
     this.outline.set('splash',
-      new SceneObject(this.game, 'house',
+      new SceneObject(this.game, 'loading',
         new SceneObjectAssets('./static/assets/resources/', 'LoadingUI.babylon', 'plane', [])))
   }
 
@@ -445,7 +445,7 @@ class SceneLoading extends Scene {
     this.star.visibility = 0
     this.star.material = this.starMaterial
     this.star.visibility = 1
-    this.starSpeed = 0.05
+    this.starSpeed = 0.005
 
     let speedKey = [{frame: 0, value: 0.05}, {frame: 30, value: 0.03}, {frame: 60, value: 0.01}]
 
@@ -472,6 +472,13 @@ class SceneLoading extends Scene {
     window.DeviceOrientationEvent && window.addEventListener('deviceorientation', e => {
       this.star.position = new BABYLON.Vector3(e.gamma / 90 * 2, e.beta / 180 * 2, 0)
     }, true)
+  }
+
+  __disposeGUI () {
+    setTimeout(() => {
+      this.guis.advancedTexture.dispose()
+      this._loadingText.dispose()
+    }, 1500)
   }
 }
 
@@ -542,6 +549,11 @@ class LoadingProgressText {
         }
       }, 24)
     }
+  }
+
+  dispose () {
+    window.clearInterval(this._TIMER)
+    this.advancedTexture.dispose()
   }
 }
 

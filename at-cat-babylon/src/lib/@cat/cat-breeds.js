@@ -18,8 +18,22 @@ export default class CatBreeds {
   }
 
   // #region get properties
+  /**
+   * 暹罗猫
+   *
+   * @type {number}
+   * @memberof CatBreeds
+   */
   get siamese () { return this._siamese }
+  set siamese (num) { this._siamese = num }
+  /**
+   * 布偶猫
+   *
+   * @type {number}
+   * @memberof CatBreeds
+   */
   get ragdoll () { return this._ragdoll }
+  set ragdoll (num) { this._ragdoll = num }
   get scottishFold () { return this._scottishFold }
   get britishShorthair () { return this._britishShorthair }
   get persian () { return this._persian }
@@ -34,8 +48,6 @@ export default class CatBreeds {
   // #endregion
 
   // #region set properties
-  set siamese (num) { this._siamese = num }
-  set ragdoll (num) { this._ragdoll = num }
   set scottishFold (num) { this._scottishFold = num }
   set britishShorthair (num) { this._britishShorthair = num }
   set persian (num) { this._persian = num }

@@ -8,6 +8,7 @@ import CatMaker from './cat-maker'
 import CatBreeds from './cat-breeds'
 import CatGene from './cat-gene'
 import CatMesh from './cat-mesh'
+import User from './user'
 
 export {
   Game,
@@ -19,5 +20,6 @@ export {
   CatMaker,
   CatBreeds,
   CatGene,
-  CatMesh
+  CatMesh,
+  User
 }

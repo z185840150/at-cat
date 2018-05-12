@@ -1,0 +1,29 @@
+{
+  "name": "at-cat-ssr",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "chameleon <magic.alone.k@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "gulp dev",
+    "build": "gulp build"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ],
+    "plugins": [
+      "add-module-exports"
+    ],
+    "compact": false
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.5.0",
+    "run-sequence": "^2.2.1"
+  }
+}

@@ -70,7 +70,7 @@ BABYLON.Effect.ShadersStore['starPixelShader'] = `
     vec3 stp = ray / max(abs(ray.x), abs(ray.y));
 
     vec3 pos = 2.0 * stp + .5;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
       float z = Noise(ivec2(pos.xy)).x;
       z = fract(z - offset);
       float d = 50.0 * z - pos.z;

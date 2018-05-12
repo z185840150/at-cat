@@ -26,16 +26,17 @@ class TargetMaker {
       let basePosition = `0 `
       let result = ``
 
-      let _i = 0
-      let _ii = 0
-      source.p.map((v, i) => {
-        _i++
-        if (_i) {
-          _ii++
-          basePosition += `\n ${_ii}`
-        }
-        basePosition += ` ${v}`
-      })
+      // let _i = -1
+      // let _vecIndex = 0
+      // source.p.map((v, i) => {
+      //   _i++
+      //   if (_i === 3) {
+      //     _vecIndex++
+      //     _i = 0
+      //     basePosition += `\n ${_vecIndex}`
+      //   }
+      //   basePosition += ` ${v}`
+      // })
 
       // for (let i = 0; i < source.p.length / 3; i++) {
       //   let sourceVertex = new BABYLON.Vector3(source.p[i * 3], source.p[i * 3 + 1], source.p[i * 3 + 2])
@@ -51,8 +52,9 @@ class TargetMaker {
       // }
 
       // result = Buffer.from(result).toString('base64')
-      // console.log(result)
+      console.log(basePosition)
       return {result, basePosition}
+      // return result
     } else {
       console.error(new Error('TargetMaker 必须需求源网格以及目标网格'))
     }

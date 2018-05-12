@@ -67,27 +67,39 @@ import './lib/star-material'
 import SceneLoading from './scenes/SceneLoading'
 import Scenehouse from './scenes/SceneHouse'
 
-import TargetMaker from './lib/cat-maker/src/target-maker'
+import TargetMaker from './lib/cat-maker/src/target-maker' // eslint-disable-line
+import {Game, CatMaker, CatMesh, Gene, CatGene, User} from './lib/@cat/index' // eslint-disable-line
 
-import {Game, CatMaker, CatMesh, Gene, CatGene} from './lib/@cat/index'
+const DEBUG = false // 控制是否游戏中渲染Debug层
 
-const SHADOW_GENERATOR_SIZE = 512 // 阴影发生器采样率
-const DEBUG = true // 控制是否游戏中渲染Debug层
+class MainGame extends Game {
+  initBefore () {
+    if (window && window.location && window.location.search) {
+      const reg = new RegExp(`(^|&)token=([^&]*)(&|$)`, 'i')
+      const r = window.location.search.substr(1).match(reg)
 
-class AtCatGame extends Game {
-  initOverride () {
+      if (r) this.user = new User(unescape(r[2]))
+      else throw new Error('错误的提交参数！')
+    } else throw new Error('不支持的运行环境！')
+  }
+
+  initAfter () {
     // 初始化渲染摄像机
-    this.camera = new BABYLON.ArcRotateCamera('MAIN_CAMERA', 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), this.scene)
+    this.camera = new BABYLON.ArcRotateCamera('main-camera', 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), this.scene)
     this.camera.setPosition(new BABYLON.Vector3(0, 0, 10))
     this.camera.setTarget(BABYLON.Vector3.Zero())
     // this.camera.attachControl(this.canvas, true)
 
     // 初始化主灯光以及阴影发生器
-    this.light = new BABYLON.PointLight('MAIN_LIGHT', new BABYLON.Vector3(0, 1, 0), this.scene)
+    this.light = new BABYLON.DirectionalLight('main-light', new BABYLON.Vector3(-1, -2, -1), this.scene)
+    this.light.position = new BABYLON.Vector3(20, 50, 20)
     this.light.intensity = 0.7
-    this.shadowGenerator = new BABYLON.ShadowGenerator(SHADOW_GENERATOR_SIZE, this.light)
+    this.shadowGenerator = new BABYLON.ShadowGenerator(2048, this.light)
+    // this.shadowGenerator.useBlurExponentialShadowMap = true
+    // this.shadowGenerator.useCloseExponentialShadowMap = true
     this.shadowGenerator.useBlurExponentialShadowMap = true
-    this.shadowGenerator.useCloseExponentialShadowMap = true
+    this.shadowGenerator.useKernelBlur = true
+    this.shadowGenerator.blurKernel = 64
 
     // 初始化渲染管线
     this.pipeline = new BABYLON.DefaultRenderingPipeline('DEFAULT_PIPELINE', true, this.scene, [this.camera], true)
@@ -96,63 +108,61 @@ class AtCatGame extends Game {
     this.pipeline.fxaaEnabled = true // 快速抗锯齿，默认：false
     this.pipeline.imageProcessing.toneMappingEnabled = false // Tone Mapping, default false
     this.pipeline.imageProcessing.contrast = 1 // Camera contrast, range 1-4, default 1
-    this.pipeline.imageProcessing.exposure = 1.25 // Camera exposure, range 1-4, default 1
+    this.pipeline.imageProcessing.exposure = 3 // Camera exposure, range 1-4, default 1
     this.pipeline.bloomEnabled = true // Bloom, default false
-    this.pipeline.bloomKernel = 84 // Kernel, range 1-500, default 64
-    this.pipeline.bloomWeight = 0.6 // Weight
-    this.pipeline.bloomThreshold = 0.15 // Threshold
-    this.pipeline.bloomScale = 0.45 // Scale
+    this.pipeline.bloomKernel = 80 // Kernel, range 1-500, default 64
+    this.pipeline.bloomWeight = 0.8 // Weight
+    this.pipeline.bloomThreshold = 0.2 // Threshold
+    this.pipeline.bloomScale = 0.5 // Scale
+
+    // 初始化生成器
+    this._catMaker = new CatMaker(this)
+    // 初始化所有猫
+    this._cat = new CatMesh(this)
   }
 
-  startOverride () {
-    new SceneLoading(this)
-      .loadAssetsAsync(p => {})
-      .then(loading => {
-        loading.__loadHouseScene = () => {
-          loading.__guiTextLoadingProgressText('连接网络')
-          this.__connect2GetCatData()
-            .then(res => res.json())
-            .then(j => setTimeout(() => this.__decodeGene(loading, j, () => {
-              console.log(j)
-              setTimeout(() => {
-                loading.__guiTextLoadingProgressText('搭建环境结构')
-                const houseScene = new Scenehouse(this)
-                houseScene.loadAssetsAsync(p => {})
-                  .then(() => loading.__guiTextLoadingProgressText('获取基本形态'))
-                  .then(() => this.cat.loadAssetsAsync()) // Cat Mesh 获取资源
-                  .then(() => {
-                    loading.__guiTextLoadingProgressText('获取基因形态')
-                    this.catMaker.loadTargets(maker => {
-                    // 开始生成猫模型
-
-                      loading.__guiTextLoadingProgressText('基因网格化')
-                      console.log('cat: ', this.cat)
-                      console.log('cat: ', this.cat.meshs, this.cat.genes)
-                      console.log('cat: ', this.cat.meshs['body'])
-                      // BABYLON.SceneLoader.ImportMeshAsync('cat_body',
-                      //   './static/assets/resources/cat/babylon/',
-                      //   'cat.babylon', this.scene)
-                      //   .then(({meshes, skeletons}) => {
-                      //     houseScene.run()
-                      //     this.scene.beginWeightedAnimation(skeletons[0], 20, 150, 1, true, 1)
-                      //   })
-                      this.catMaker.build(this.cat)
-                        .then(() => {
-                          this.cat.index = 0
-                          let hash = Object.keys(this.cat.postions)[this.cat.index]
-
-                          this.cat.meshs['body'].setVerticesData(BABYLON.VertexBuffer.PositionKind, this.cat.postions[hash])
-                          this.cat.meshs['body'].visibility = 1
-                          houseScene.run()
-                        })
-                    })
-                  })
-              }, 0)
-            }), 0))
-            .catch(() => {})
-        }
-        loading.run()
-      })
+  startAfter () {
+    // this.__loadCatTargetMaker()
+    // return
+    let sceneLoading = new SceneLoading(this)
+    let sceneHouse = new Scenehouse(this)
+    sceneLoading.__loadHouseScene = () => {
+      sceneLoading.__guiTextLoadingProgressText('连接网络')
+      this.__getUserCats() // 获取用户猫数据
+        // 转为JSON基因
+        .then(res => res.json())
+        // 根据基因创建 CatMesh
+        .then(json => {
+          sceneLoading.__guiTextLoadingProgressText('提取基因')
+          for (let i = 0; i < Object.keys(json).length; i++) {
+            let {hash, gene} = json[i].catGene
+            this.cat.genes[hash] = new CatGene(gene)
+          }
+        })
+        // CatMesh 加载资源
+        .then(() => sceneLoading.__guiTextLoadingProgressText('生成器初始化'))
+        .then(() => this.cat.loadAssetsAsync())
+        // 加载环境场景资源
+        .then(() => sceneLoading.__guiTextLoadingProgressText('生成环境'))
+        .then(() => sceneHouse.loadAssetsAsync(p => {}))
+        // 构建 CatMesh 网格
+        .then(() => sceneLoading.__guiTextLoadingProgressText('获取基因控制范围'))
+        // CatMaker 读取网格目标文件
+        .then(() => this.catMaker.loadTargetsAsync())
+        // CatMaker 重构目标网格
+        .then(() => sceneLoading.__guiTextLoadingProgressText('匹配基因'))
+        .then(() => this.catMaker.build(this.cat))
+        .then(() => {
+          console.log(this.cat.hash)
+          this.cat.meshs.cat_body.setVerticesData(BABYLON.VertexBuffer.PositionKind, this.cat.positions[this.cat.hash])
+          this.cat.meshs.cat_body.visibility = 1
+          sceneHouse.run()
+          sceneLoading.__disposeGUI()
+          allReady = true
+        })
+        .then(() => {})
+    }
+    sceneLoading.loadAssetsAsync(p => {}).then(scene => scene.run())
   }
 
   /**
@@ -161,11 +171,15 @@ class AtCatGame extends Game {
    * @returns
    * @memberof AtCatGame
    */
-  __connect2GetCatData () {
-    return fetch('http://127.0.0.1:8081/api/cat/myCat', {
+  __getUserCats () {
+    return fetch('http://192.168.3.2:8081/api/cat/myCat', {
       headers: { 'content-type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify({ 'token': '094a2bc2-a214-46bc-9a8b-3b1b7dab4708' })
+      body: JSON.stringify({ 'token': this.user.token })
+    }).catch(() => {
+      this.engine.dispose()
+      document.removeChild(this.canvas)
+      throw new Error('无效令牌')
     })
   }
 
@@ -199,22 +213,51 @@ class AtCatGame extends Game {
     BABYLON.SceneLoader.ImportMeshAsync(
       '', './static/assets/resources/cat/babylon/',
       'cat-target.babylon', this.scene).then(({meshes, skeletons}) => {
-      // const names = []
+      let names = []
       this.camera.dispose()
       this.camera = new BABYLON.FreeCamera('Default-Camera', new BABYLON.Vector3(0, 0, 10), this.scene)
       this.camera.setTarget(BABYLON.Vector3.Zero())
       this.camera.attachControl(this.canvas, true)
-      console.log(meshes[10].getVerticesData(BABYLON.VertexBuffer.PositionKind))
-      // meshes.map(({name}, i) => { if (!(['cat', 'cat_eye_left', 'cat_eye_right', 'cat_body'].includes(name))) names.push(name) })
-      // let str = ''
+      // console.log(meshes[10].getVerticesData(BABYLON.VertexBuffer.PositionKind))
+      meshes.map(({name}, i) => { if (!(['cat', 'cat_eye_left', 'cat_eye_right', 'cat_body', 'cat_eye_left_glass', 'cat_eye_right_glass'].includes(name))) names.push(name) })
+      let str = ''
+      this.scene.getMeshByName('cat_body').getVerticesData(BABYLON.VertexBuffer.PositionKind).map(v => {
+        str += `${v}|`
+      })
       // names.map(name => {
       //   str += `*${name}\n`
       //   str += new TargetMaker(this.scene.getMeshByName('cat_body'), this.scene.getMeshByName(name)).build()
       // })
-      // console.log(str)
+      console.log(str)
     })
   }
 }
 
-window.game = new AtCatGame() // 全局注册游戏
-window.addEventListener('DOMContentLoaded', () => { window.game.start(DEBUG) })
+const touch = require('touchjs')
+
+let allReady = false
+
+window.addEventListener('DOMContentLoaded', () => {
+  window.game = new MainGame(document.getElementById('renderCanvas'))
+  window.game.start(DEBUG)
+  touch.on(document.body, 'swipeleft', () => {
+    if (allReady) changeCatIndex(window.game.cat.index + 1)
+  })
+  touch.on(document.body, 'swiperight', () => {
+    if (allReady) changeCatIndex(window.game.cat.index - 1)
+  })
+})
+
+function changeCatIndex (index) {
+  console.log(index, Object.keys(window.game.cat.genes))
+  if (index < 0) return
+  if (index > Object.keys(window.game.cat.genes).length - 1) return
+  console.log(index)
+
+  window.game.cat.index = index
+
+  window.game.catMaker.build(window.game.cat).then(() => {
+    window.game.cat.meshs.cat_body.setVerticesData(BABYLON.VertexBuffer.PositionKind, window.game.cat.positions[window.game.cat.hash])
+    window.game.cat.meshs.cat_body.visibility = 1
+  })
+}
