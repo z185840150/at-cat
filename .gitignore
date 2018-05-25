@@ -63,8 +63,8 @@ at-cat-babylon/static
 at-cat-flutter
 at-cat-maya
 at-cat-nw
-at-cat-ssr
-at-cat-ssr-post
+at-cat-ssr-render-server
+# at-cat-ssr-task-server
 at-cat-substance
 at-cat-vue
 at-cat-vue_
