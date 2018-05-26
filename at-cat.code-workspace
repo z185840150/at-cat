@@ -1,0 +1,40 @@
+{
+"folders": [
+	{
+		"path": "at-cat-babylon"
+	},
+	{
+		"path": "at-cat-flutter"
+	},
+	{
+		"path": "at-cat-maya"
+	},
+	{
+		"path": "at-cat-nw"
+	},
+	{
+		"path": "at-cat-ssr-render-server"
+	},
+	{
+		"path": "at-cat-ssr-task-server"
+	},
+	{
+		"path": "at-cat-substance"
+	},
+	{
+		"path": "at-cat-vue"
+	}
+],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.minimap.enabled": false,
+    "editor.minimap.showSlider": "always",
+    "editor.roundedSelection": false,
+    "editor.renderWhitespace": "all",
+    "editor.insertSpaces": false,
+    "editor.mouseWheelZoom": true,
+    "typescript.tsdk": "C:/Users/18584/AppData/Roaming/npm/node_modules/typescript/lib",
+    "git.ignoreLimitWarning": true,
+    "javascript.implicitProjectConfig.experimentalDecorators": true
+  }
+}

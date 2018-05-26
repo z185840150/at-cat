@@ -73,17 +73,57 @@ export default class CatMaker {
     this.textures.eyeNormalGlass = new BABYLON.Texture('./static/assets/resources/cat/textures/eye/m_cat_eye_glass_pbr_mr_baseColor.png')
     this.textures.eyeOcclusionRoughnessMetallicGlass = new BABYLON.Texture('./static/assets/resources/cat/textures/eye/m_cat_eye_glass_pbr_mr_baseColor.png')
 
-    this.textures.siameseBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_baseColor.png')
-    this.textures.siameseNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_normal.png')
-    this.textures.siameseOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+    this.textures.americanShorthairBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/americanShorthair/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.americanShorthairNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/americanShorthair/m_cat_body_pbr_mr_normal.png')
+    this.textures.americanShorthairOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/americanShorthair/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.bombayBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/bombay/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.bombayNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/bombay/m_cat_body_pbr_mr_normal.png')
+    this.textures.bombayOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/bombay/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.britishShorthairBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/britishShorthair/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.britishShorthairNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/britishShorthair/m_cat_body_pbr_mr_normal.png')
+    this.textures.britishShorthairOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/britishShorthair/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.canadianHairlessBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/canadianHairless/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.canadianHairlessNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/canadianHairless/m_cat_body_pbr_mr_normal.png')
+    this.textures.canadianHairlessOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/canadianHairless/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.egyptianMauBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/egyptianMau/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.egyptianMauNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/egyptianMau/m_cat_body_pbr_mr_normal.png')
+    this.textures.egyptianMauOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/egyptianMau/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.exoticBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/exotic/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.exoticNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/exotic/m_cat_body_pbr_mr_normal.png')
+    this.textures.exoticOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/exotic/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.maineCoonBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/maineCoon/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.maineCoonNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/maineCoon/m_cat_body_pbr_mr_normal.png')
+    this.textures.maineCoonOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/maineCoon/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.norwegianForestBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/norwegianForest/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.norwegianForestNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/norwegianForest/m_cat_body_pbr_mr_normal.png')
+    this.textures.norwegianForestOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/norwegianForest/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.persianBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.persianNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_normal.png')
+    this.textures.persianOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
 
     this.textures.ragdollBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/ragdoll/m_cat_body_pbr_mr_baseColor.png')
     this.textures.ragdollNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/ragdoll/m_cat_body_pbr_mr_normal.png')
     this.textures.ragdollOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/ragdoll/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
 
-    this.textures.persianBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_baseColor.png')
-    this.textures.persianNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_normal.png')
-    this.textures.persianOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/persian/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+    this.textures.russianBlueBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/russianBlue/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.russianBlueNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/russianBlue/m_cat_body_pbr_mr_normal.png')
+    this.textures.russianBlueOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/russianBlue/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.scottishFoldBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/scottishFold/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.scottishFoldNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/scottishFold/m_cat_body_pbr_mr_normal.png')
+    this.textures.scottishFoldOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/scottishFold/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
+
+    this.textures.siameseBaseColor = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_baseColor.png')
+    this.textures.siameseNormalColor = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_normal.png')
+    this.textures.siameseOcclusionRoughnessMetallic = new BABYLON.Texture('./static/assets/resources/cat/textures/siamese/m_cat_body_pbr_mr_occlusionRoughnessMetallic.png')
 
     this.game.assetsManager.reset() // 资源管理器初始化
 
@@ -153,30 +193,31 @@ export default class CatMaker {
       let gene = cat.genes[hash]
       let pos = [].concat(cat.basePosition)
 
+      console.log(gene)
+
       await this.COMPUTE_AGE(pos, gene, cat.basePosition)
         .then(pos => this.COMPUTE_SEX(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_WEIGHT(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_HEIGHT(pos, gene, cat.basePosition))
-        .then(pos => this.COMPUTE_FATRATE(pos, gene, cat.basePosition))
 
         .then(pos => this.COMPUTE_HEAD_AGE(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_HEAD_FAT(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_HEAD_ANGLE(pos, gene, cat.basePosition))
 
-        .then(pos => this.COMPUTE_HEAD_OVAL(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_ROUND(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_RECTANGULAR(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_SQUARE(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_TRIANGULAR(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_TRIANGULAR_INVERTED(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_DIAMOND(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_PARIETAL_SCALE_DEPTH(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_SCALE_DEPTH(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_SCALE_HORIZONTALLY(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_SCALE_VERTICALLY(pos, gene, cat.basePosition, 0.6))
-        .then(pos => this.COMPUTE_HEAD_MOVE_DEPTH(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_MOVE_HORIZONTALLY(pos, gene, cat.basePosition, 0.2))
-        .then(pos => this.COMPUTE_HEAD_MOVE_VERTICALLY(pos, gene, cat.basePosition, 0.2))
+        .then(pos => this.COMPUTE_HEAD_OVAL(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_ROUND(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_RECTANGULAR(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_SQUARE(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_TRIANGULAR(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_TRIANGULAR_INVERTED(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_DIAMOND(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_PARIETAL_SCALE_DEPTH(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_SCALE_DEPTH(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_SCALE_HORIZONTALLY(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_SCALE_VERTICALLY(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_MOVE_DEPTH(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_MOVE_HORIZONTALLY(pos, gene, cat.basePosition, 1))
+        .then(pos => this.COMPUTE_HEAD_MOVE_VERTICALLY(pos, gene, cat.basePosition, 1))
 
         .then(pos => this.COMPUTE_FOREHEAD_BULGE(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_FOREHEAD_SCALE_VERTICALLY(pos, gene, cat.basePosition))
@@ -215,9 +256,7 @@ export default class CatMaker {
         .then(pos => this.COMPUTE_EYE_MOVE_VERTICALLY(pos, gene, cat.basePosition))
         .then(pos => this.COMPUTE_EYE_SCALE(pos, gene, cat.basePosition))
 
-        .then(pos => {
-          cat.positions[hash] = pos
-        })
+        .then(pos => { cat.positions[hash] = pos })
         .then(() => this.COMPUTE_EYE_COLOR(gene, cat))
         .then(() => this.COMPUTE_BREEDS(gene, cat))
     }
@@ -295,7 +334,7 @@ export default class CatMaker {
     for (let i = 1; i < names.length; i++) {
       breed = gene.breeds[breed] >= gene.breeds[names[i]] ? breed : names[i]
     }
-    if (!['ragdoll', 'persian', 'siamese'].includes(breed)) breed = 'siamese'
+    // if (!['ragdoll', 'persian', 'siamese'].includes(breed)) breed = 'siamese'
 
     cat.mats['m_cat_body_pbr_mr'].metallic = 1
     cat.mats['m_cat_body_pbr_mr'].roughness = 1

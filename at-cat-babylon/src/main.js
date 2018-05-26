@@ -172,7 +172,7 @@ class MainGame extends Game {
    * @memberof AtCatGame
    */
   __getUserCats () {
-    return fetch('http://192.168.3.2:8081/api/cat/myCat', {
+    return fetch('https://sc.atmao.net/api/cat/myCat', {
       headers: { 'content-type': 'application/json' },
       method: 'POST',
       body: JSON.stringify({ 'token': this.user.token })
